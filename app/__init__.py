@@ -8,6 +8,7 @@ from app.api.models.models import db, migrate
 import json
 import time
 from flask_cors import CORS
+from app.scheduler import regiset_scheduler
 
 
 def create_app():
@@ -17,6 +18,7 @@ def create_app():
     CORS(app)
     db.init_app(app)
     migrate.init_app(app, db)
+    regiset_scheduler(app)
     app.register_blueprint(auth_bp)
     app.register_blueprint(convert_bp)
     app.register_blueprint(travler_bp)
