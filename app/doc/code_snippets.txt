@@ -1,0 +1,4 @@
+
+testcase = db.session.query(TestCases).filter_by(test_case_id=item).first()
+print(testcase)
+
