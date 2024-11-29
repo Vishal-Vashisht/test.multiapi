@@ -29,7 +29,7 @@ API_CONFIG = {
         "methods": set(("POST",)),
         "is_authenticated": True,
     },
-    "/api/v1/auth/insert/parallel/": {
+    "/api/v1/auth/parallel/": {
         "methods": set(("POST",)),
         "is_authenticated": True,
     },
