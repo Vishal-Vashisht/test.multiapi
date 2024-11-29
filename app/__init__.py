@@ -6,6 +6,7 @@ from app.api.controllers.convert_type_controller import convert_bp
 from app.api.controllers.traveler_controller import travler_bp
 from app.api.controllers.user_controller import auth_bp
 from app.api.controllers.sample_controller import sample_bp
+from app.api.controllers.data_controller import data_bp
 from app.api.models.models import db, migrate
 from app.scheduler import register_scheduler
 from config.redis_config import redis_client
@@ -25,5 +26,6 @@ def create_app():
     app.register_blueprint(convert_bp)
     app.register_blueprint(travler_bp)
     app.register_blueprint(sample_bp)
+    app.register_blueprint(data_bp)
 
     return app

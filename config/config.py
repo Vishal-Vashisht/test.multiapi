@@ -36,5 +36,17 @@ API_CONFIG = {
     "/api/v1/sample/": {
         "methods": set(("GET",)),
         "is_authenticated": False,
+    },
+    "/api/v1/data/": {
+        "methods": set(("GET",)),
+        "is_authenticated": True,
+        "query_params": {
+            "page": {
+                "type": "integer"
+            },
+            "size": {
+                "type": "integer"
+            }
+        }
     }
 }
