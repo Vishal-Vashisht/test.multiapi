@@ -30,6 +30,7 @@ class Parellel(NamedTuple):
     refrence_id: int = None
     # status: str = "no_status"
 
+
 class UserAppPost(NamedTuple):
 
     pk: int = 0

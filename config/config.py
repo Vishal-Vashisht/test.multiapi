@@ -7,6 +7,9 @@ dotenv.load_dotenv()
 SECRET_KEY = os.getenv("SECRET_KEY")
 SQLALCHEMY_DATABASE_URI = "sqlite:///database.db"
 API_KEY = os.getenv("API_KEY")
+ADMIN_MAIL = os.getenv("ADMIN_MAIL")
+PASS = os.getenv("PASS")
+USERNAME = os.getenv("USERNAME")
 
 API_CONFIG = {
     "/api/v1/convert/": {
@@ -37,6 +40,10 @@ API_CONFIG = {
         "methods": set(("GET",)),
         "is_authenticated": False,
     },
+    "/api/v1/auth/user/login/": {
+        "methods": set(("POST",)),
+        "is_authenticated": False,
+    },
     "/api/v1/data/": {
         "methods": set(("GET",)),
         "is_authenticated": True,
@@ -48,5 +55,5 @@ API_CONFIG = {
                 "type": "integer"
             }
         }
-    }
+    },
 }
