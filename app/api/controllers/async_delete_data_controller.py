@@ -12,11 +12,14 @@ class ListDeleteDataAPIView(MethodView):
 
     def post(self):
 
-        app = current_app._get_current_object()
-        thread_id = uuid.uuid4()
-        t1 = Thread(target=delete_data, args=(app, str(thread_id)))
-        t1.start()
-        return {"msg": "success", "process_id": thread_id}
+        try:
+            app = current_app._get_current_object()
+            thread_id = uuid.uuid4()
+            t1 = Thread(target=delete_data, args=(app, str(thread_id)))
+            t1.start()
+            return {"msg": "success", "process_id": thread_id}
+        except Exception as e:
+            return {"msg": "Inernal server error", "error": str(e)}
 
     def get(self):
 
