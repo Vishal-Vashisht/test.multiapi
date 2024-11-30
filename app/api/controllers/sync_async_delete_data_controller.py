@@ -4,7 +4,7 @@ from threading import Thread
 from flask import Blueprint, current_app, request
 from flask.views import MethodView
 
-from app.api.services.delete_data import delete_data
+from app.api.services.delete_data import delete_data_async, delete_data_sync
 from app.api.models.models import BGTasks, BGTaskResponse
 
 
@@ -15,7 +15,7 @@ class ListDeleteDataAPIView(MethodView):
         try:
             app = current_app._get_current_object()
             thread_id = uuid.uuid4()
-            t1 = Thread(target=delete_data, args=(app, str(thread_id)))
+            t1 = Thread(target=delete_data_async, args=(app, str(thread_id)))
             t1.start()
             return {"msg": "success", "process_id": thread_id}
         except Exception as e:
@@ -52,12 +52,11 @@ class SyncDeletAPIView(MethodView):
         try:
             app = current_app._get_current_object()
             thread_id = uuid.uuid4()
-            delete_data(app, str(thread_id))
-            return {"msg": "success", "process_id": thread_id}
+            return delete_data_sync(app, str(thread_id))
         except Exception as e:
             return {"msg": "Inernal server error", "error": str(e)}
 
 delete_data_bp = Blueprint("delete_data_type", __name__, url_prefix="/api/v1/tables/") # noqa
 delete_data_bp.add_url_rule("async/delete/", view_func=ListDeleteDataAPIView.as_view("delete_data"), methods=["POST"]) # noqa
 delete_data_bp.add_url_rule("task/info/", view_func=ListDeleteDataAPIView.as_view("get_data"), methods=["GET"]) # noqa
-delete_data_bp.add_url_rule("sync/delete/", view_func=ListDeleteDataAPIView.as_view("SyncDeletAPIView")) # noqa
+delete_data_bp.add_url_rule("sync/delete/", view_func=SyncDeletAPIView.as_view("SyncDeletAPIView")) # noqa
