@@ -8,7 +8,7 @@ from app.api.controllers.user_controller import auth_bp
 from app.api.controllers.sample_controller import sample_bp
 from app.api.controllers.data_controller import data_bp
 from app.api.controllers.user_auth import user_bp
-from app.api.controllers.async_delete_data_controller import delete_data_bp
+from app.api.controllers.sync_async_delete_data_controller import delete_data_bp
 from app.api.models.models import db, migrate, insert_initial_data
 from app.scheduler import register_scheduler
 from config.redis_config import redis_client

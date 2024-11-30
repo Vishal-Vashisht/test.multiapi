@@ -45,6 +45,19 @@ class ListDeleteDataAPIView(MethodView):
         }
 
 
+class SyncDeletAPIView(MethodView):
+
+    def post(self):
+
+        try:
+            app = current_app._get_current_object()
+            thread_id = uuid.uuid4()
+            delete_data(app, str(thread_id))
+            return {"msg": "success", "process_id": thread_id}
+        except Exception as e:
+            return {"msg": "Inernal server error", "error": str(e)}
+
 delete_data_bp = Blueprint("delete_data_type", __name__, url_prefix="/api/v1/tables/") # noqa
-delete_data_bp.add_url_rule("delete/", view_func=ListDeleteDataAPIView.as_view("delete_data"), methods=["POST"]) # noqa
+delete_data_bp.add_url_rule("async/delete/", view_func=ListDeleteDataAPIView.as_view("delete_data"), methods=["POST"]) # noqa
 delete_data_bp.add_url_rule("task/info/", view_func=ListDeleteDataAPIView.as_view("get_data"), methods=["GET"]) # noqa
+delete_data_bp.add_url_rule("sync/delete/", view_func=ListDeleteDataAPIView.as_view("SyncDeletAPIView")) # noqa

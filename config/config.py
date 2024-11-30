@@ -44,7 +44,11 @@ API_CONFIG = {
         "methods": set(("POST",)),
         "is_authenticated": False,
     },
-    "/api/v1/tables/delete/": {
+    "/api/v1/tables/async/delete/": {
+        "methods": set(("POST",)),
+        "is_authenticated": True,
+    },
+    "/api/v1/tables/sync/delete/": {
         "methods": set(("POST",)),
         "is_authenticated": True,
     },
