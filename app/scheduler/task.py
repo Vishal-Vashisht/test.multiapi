@@ -1,9 +1,12 @@
-from app.api.models.models import db, DailyDataDelete
 import datetime
-from sqlalchemy import inspect, text
 
-MAIN_DB = set(("postgresql", "mysql", "oracle"))
-NOT_DELETE_TABLE = set(("alembic_version", "daily_data_delete"))
+from app.api.models.models import DailyDataDelete, db
+from app.utils import (
+    MAIN_DB,
+    delete_main_db_data,
+    delete_sqllite_data,
+    )
+from app.constants import logger
 
 
 def Delete_database_data(app):
@@ -17,11 +20,13 @@ def Delete_database_data(app):
             DailyDataDelete.event_date == current_date).first()
 
         if ((start_time <= current_time or current_time <= end_time) and not event_date_in_db):
-            print("current time: ->", current_time,
-                  "start_time: -> ", start_time,
-                  "end time: -> ", end_time)
+            logger.info("current time: -> %s", current_time)
+            logger.info("start_time: -> %s", start_time)
+            logger.info("end time: -> %s", end_time)
+
             try:
-                print("Performing data cleanup task", event_date_in_db)
+                logger.info(
+                    "Performing data cleanup task %s", event_date_in_db)
 
                 dialect = db.engine.dialect.name.lower()
                 if dialect == "sqlite":
@@ -38,37 +43,4 @@ def Delete_database_data(app):
                 # Save to the database
                 insert_event_date.save()
             except Exception as e:
-                print("Error in data cleanup ->", str(e))
-
-
-def delete_sqllite_data():
-
-    inspector = inspect(db.engine)
-    tables = inspector.get_table_names()
-
-    for table in tables:
-        if table in NOT_DELETE_TABLE:
-            continue
-        db.session.execute(text(f'DELETE FROM {table};'))
-        print("deleted data for", table)
-
-    db.session.commit()
-    db.session.execute(text('VACUUM;'))
-    db.session.commit()
-    print("Database compacted and all rows deleted.")
-
-
-def delete_main_db_data(dialect):
-
-    inspector = inspect(db.engine)
-    tables = inspector.get_table_names()
-
-    for table in tables:
-        if table in NOT_DELETE_TABLE:
-            continue
-        if dialect == "postgresql":
-            db.session.execute(text(f'TRUNCATE TABLE {table} RESTART IDENTITY CASCADE;'))
-        else:
-            db.session.execute(text(f'TRUNCATE TABLE {table};'))
-    db.session.commit()
-    print("Database compacted and all rows deleted.")
+                logger.info("Error in data cleanup ->%s", str(e))

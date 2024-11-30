@@ -1,5 +1,6 @@
 from flask import Blueprint, request
 from flask.views import MethodView
+from app.constants import logger
 
 
 class ConvertToType(MethodView):
@@ -7,8 +8,8 @@ class ConvertToType(MethodView):
     def post(self):
 
         data = request.get_json()
-        print("data received from api", data)
-        print("type of data : -", type(data))
+        logger.info("data received from api %s", data)
+        logger.info("type of data : - %s", type(data))
 
         return data
 

@@ -8,10 +8,12 @@ from app.api.controllers.user_controller import auth_bp
 from app.api.controllers.sample_controller import sample_bp
 from app.api.controllers.data_controller import data_bp
 from app.api.controllers.user_auth import user_bp
+from app.api.controllers.async_delete_data_controller import delete_data_bp
 from app.api.models.models import db, migrate, insert_initial_data
 from app.scheduler import register_scheduler
 from config.redis_config import redis_client
 from app.middelware import register_middelware
+from app.commands import register_cli_commands
 
 
 def create_app():
@@ -23,11 +25,12 @@ def create_app():
     migrate.init_app(app, db)
     # register_scheduler(app)
     register_middelware(app)
-    insert_initial_data(app)
+    register_cli_commands(app)
     app.register_blueprint(auth_bp)
     app.register_blueprint(convert_bp)
     app.register_blueprint(travler_bp)
     app.register_blueprint(sample_bp)
     app.register_blueprint(data_bp)
     app.register_blueprint(user_bp)
+    app.register_blueprint(delete_data_bp)
     return app

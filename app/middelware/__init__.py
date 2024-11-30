@@ -1,5 +1,6 @@
 from .middelware import ApplyAuthentication
 from flask import request
+from app.constants import logger
 
 
 def _url_rule_to_authenticate(app):
@@ -11,7 +12,7 @@ def _url_rule_to_authenticate(app):
     method = request.method
     url_rule = str(request.url_rule)
 
-    print("url", url_rule, method, "method")
+    logger.info("url %s method %s", url_rule, method)
     if url_rule not in api_config:
         return "Resource Not found", 404
 

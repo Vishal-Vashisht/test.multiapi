@@ -44,6 +44,14 @@ API_CONFIG = {
         "methods": set(("POST",)),
         "is_authenticated": False,
     },
+    "/api/v1/tables/delete/": {
+        "methods": set(("POST",)),
+        "is_authenticated": True,
+    },
+    "/api/v1/tables/task/info/": {
+        "methods": set(("GET",)),
+        "is_authenticated": True,
+    },
     "/api/v1/data/": {
         "methods": set(("GET",)),
         "is_authenticated": True,

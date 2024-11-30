@@ -1,0 +1,8 @@
+{
+    "data" : [
+        {"status_name": "in-progress"},
+        {"status_name": "complete"},
+        {"status_name": "error"},
+        {"status_name": "na"}
+    ]
+}

@@ -1,12 +1,13 @@
 import json
 
-from flask import Blueprint, jsonify, request
+from flask import Blueprint, request
 from flask.views import MethodView
 
 from app.api.entity import (ParallelEntity, UserAppEntity, UserAppPostEntity,
                             UserCartEntity)
 from app.api.models.models import (ParallelData, UserApp, UserAppPostData,
                                    UserCart, db)
+from app.constants import logger
 from app.utils import paginate_response
 
 
@@ -72,8 +73,6 @@ class DataAPIView(MethodView):
             "page": page,
             "page_size": size
         }
-
-        print(response)
         return response, 200
 
 

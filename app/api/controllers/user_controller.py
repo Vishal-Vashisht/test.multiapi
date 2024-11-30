@@ -2,6 +2,7 @@ from flask import Blueprint, request
 from flask.views import MethodView
 from ..models.models import UserApp, UserCart, UserAppPostData, ParallelData
 from ..entity import UserCartEntity, UserAppEntity, ParallelEntity
+from app.constants import logger
 
 
 class RegisterCartUser(MethodView):
@@ -10,7 +11,7 @@ class RegisterCartUser(MethodView):
 
         data = request.get_json()
 
-        print("data received usercart", data)
+        logger.info("data received usercart %s", data)
         if isinstance(data, list):
             data = data[0]
 
@@ -39,7 +40,7 @@ class RegisterAppUser(MethodView):
 
         data = request.get_json()
 
-        print("data received", data)
+        logger.info("data received %s", data)
         if isinstance(data, list):
             data = data[0]
         userapp = UserAppEntity(**data)
@@ -68,7 +69,7 @@ class UserAppPostAPI(MethodView):
 
         data = request.get_json()
 
-        print("data received", data)
+        ("data received", data)
         if isinstance(data, list):
             data = data[0]
         userapppost = UserAppEntity(**data)
@@ -96,7 +97,7 @@ class ParallelAPI(MethodView):
         data = request.get_json()
         destinantion_num = request.headers.get('Destination-Num', "--")
 
-        print("data received on parallel", data)
+        logger.info("data received on parallel %s", data)
         if isinstance(data, list):
             data = data[0]
         parallel_post = ParallelEntity(**data)

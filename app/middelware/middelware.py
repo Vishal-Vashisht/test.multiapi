@@ -1,3 +1,6 @@
+from app.constants import logger
+
+
 class ApplyAuthentication():
 
     def __init__(self, app, request):
@@ -24,5 +27,5 @@ class ApplyAuthentication():
         return None, None
 
     def test_function(self):
-        print("I'm a test function"),
+        logger.info("I'm a test function"),
         return None, None
