@@ -9,9 +9,23 @@
 
     <script src="https://code.jquery.com/jquery-3.7.1.slim.js" integrity="sha256-UgvvN8vBkgO0luPSUl2s8TIlOSYRoGFAX4jlCIm9Adc=" crossorigin="anonymous"></script>
     <script src="https://cdnjs.cloudflare.com/ajax/libs/jquery/3.7.1/jquery.min.js" integrity="sha512-v2CJ7UaYy4JwqLDIrZUI/4hqeoQieOmAZNXBeQyjo21dadnwR+8ZaIJVT8EE2iyI61OV8e6M8PP2/4hpQINQ/g==" crossorigin="anonymous" referrerpolicy="no-referrer"></script>
+    <script>
+      $(document).ready(function () {
+        $("#Log-out-btn").click(function() {
+          token = sessionStorage.getItem("access_token")
+          if (token){
+            sessionStorage.removeItem("access_token")
+          }
+          document.cookie = "access_token=; expires=Thu, 01 Jan 1970 00:00:00 UTC; path=/;";
+          window.location.href = '/home/login/'
+          
+        });
+      });
+    </script>
     {% block head  %} {%endblock%}
 </head>
 <body>
+  {%if title != 'Serving Login' %}
     <nav class="navbar navbar-expand-lg bg-body-tertiary" data-bs-theme="dark">
         <div class="container-fluid">
           <a class="navbar-brand" href="#">Ease</a>
@@ -27,10 +41,19 @@
                 <a class="nav-link" href="#">Models</a>
               </li> -->
             </ul>
+
+            <ul class="navbar-nav float-right">
+              <li class="nav-item float-right">
+                <a class="nav-link active" aria-current="page" id="Log-out-btn">Log Out</a>
+              </li>
+              <!-- <li class="nav-item">
+                <a class="nav-link" href="#">Models</a>
+              </li> -->
+            </ul>
           </div>
         </div>
       </nav>
-    
+    {%endif%}
     {% block content %}
 
     {% endblock %}
