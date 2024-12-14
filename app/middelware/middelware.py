@@ -12,6 +12,9 @@ class ApplyAuthentication():
 
         auth_header = self.__request.headers.get("authorization")
 
+        if not auth_header:
+            auth_header = self.__request.cookies.get('access_token')
+
         if not self.__api_key or not auth_header or \
                 auth_header[:6] != "Bearer":
             return {

@@ -68,4 +68,23 @@ API_CONFIG = {
             }
         }
     },
+    "/home/": {
+        "methods": set(("GET",)),
+        "is_authenticated": True
+    },
+    "/home/data/": {
+        "methods": set(("GET",)),
+        "is_authenticated": True
+    },
+    "/home/login/": {
+        "methods": set(("GET",)),
+        "is_authenticated": False
+    }
 }
+
+# if static folder changes define it in this list
+# STATIC_CONFIG = {
+#     "folders": set((
+#         "static",
+#     ))
+# }

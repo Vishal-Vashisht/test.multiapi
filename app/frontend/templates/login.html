@@ -1,0 +1,26 @@
+{% extends "base.html" %}
+
+{%block title%}
+Serving Login
+{%endblock%}
+
+{%block head %}
+<link href="{{ url_for('static', filename='css/login.css') }}" rel="stylesheet">
+<script type="text/javascript" src="{{ url_for('static', filename='js/login.js') }}"></script>
+{%endblock%}
+{% block content %}
+<div class="wrapper fadeInDown">
+    <div id="formContent">
+      <!-- Tabs Titles -->
+      <h2 class="active"> Sign In </h2>
+  
+      <!-- Login Form -->
+      <form autocomplete="on" id="loginform">
+        <input type="text" id="username" class="fadeIn second" name="username" placeholder="Username">
+        <input type="text" id="password" class="fadeIn third" name="password" placeholder="password">
+        <input type="submit" class="fadeIn fourth" value="Log In" id="login-unique">
+      </form>
+  
+    </div>
+  </div>
+{%endblock%}

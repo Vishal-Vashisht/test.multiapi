@@ -1,0 +1,29 @@
+{% extends "base.html" %}
+
+{% block title%}
+{{title}}
+{%endblock %}
+
+{%block head %}
+    <script type="text/javascript" src="{{ url_for('static', filename='js/script.js') }}"></script>
+{%endblock%}
+{% block content %}
+<div class="container text-center pt-3">
+    <div class="row">
+        <div class="d-grid gap-2">
+            <button type="button" class="btn btn-primary" id="btn-get-data" onclick="navigateToPage()">Get Data</button>
+        </div>
+    </div>
+    <div class="row mt-2">
+        <div class="col" >
+            <div class="accordion accordion-flush unique-data-show" id="accordionFlushExample">
+                <div class="card">
+                    <div class="card-header">
+                        There is no data currently click on Get data to fetch the data
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
+{%endblock%}

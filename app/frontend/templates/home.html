@@ -1,0 +1,39 @@
+{% extends "base.html" %}
+
+{%block title%}
+Serving Home
+{%endblock%}
+
+
+{% block content %}
+<div class="container text-center pt-3">
+    <div class="row">
+        <div class="col">
+            <div class="card">
+                <div class="card-header">
+                    <b>API Data</b>
+                </div>
+                <div class="card-body">
+                    <h5 class="card-title">Have Created data in model?</h5>
+                    <p>Click below to validate the data</p>
+                    <a href="{{ url_for('home_bp.data_view') }}" class="btn btn-primary">Model Data</a>
+                </div>
+            </div>
+        </div>
+    </div>
+    <div class="row mt-3">
+        <div class="col">
+            <div class="card">
+                <div class="card-header">
+                    <b>Create Data</b>
+                </div>
+                <div class="card-body">
+                    <h5 class="card-title">Want to create some data?</h5>
+                    <p>Click below to create</p>
+                    <a href="#" class="btn btn-secondary disabled">Data Insertion</a>
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
+    {% endblock %}

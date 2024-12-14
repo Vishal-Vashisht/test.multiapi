@@ -1,4 +1,4 @@
-from flask import Blueprint, request
+from flask import Blueprint, request, make_response, jsonify
 from flask.views import MethodView
 from werkzeug.security import check_password_hash
 from app.api.models.models import Users
@@ -39,8 +39,12 @@ class UserLoginView(MethodView):
 
         body["access_token"] = API_KEY
         body["msg"] = "success"
+        # Create the response object
+        resp = make_response(jsonify(body), status)
 
-        return body, status
+        # Set the access_token in the cookie
+        resp.set_cookie('access_token', f"Bearer {API_KEY}")
+        return resp
 
 
 user_bp = Blueprint("user_bp", __name__, url_prefix="/api/v1/auth/user/login/")

@@ -14,6 +14,7 @@ from app.scheduler import register_scheduler
 from config.redis_config import redis_client
 from app.middelware import register_middelware
 from app.commands import register_cli_commands
+from app.frontend.controllers import homebp
 
 
 def create_app():
@@ -33,4 +34,7 @@ def create_app():
     app.register_blueprint(data_bp)
     app.register_blueprint(user_bp)
     app.register_blueprint(delete_data_bp)
+
+    # register forntend bps
+    app.register_blueprint(homebp)
     return app
