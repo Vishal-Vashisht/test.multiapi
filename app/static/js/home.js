@@ -17,7 +17,7 @@ $(document).ready(function () {
 
     function deleteDataAPICall() {
         $.ajax({
-            url: `${host}/api/v1/tables/sync/delete/"`,
+            url: `${host}/api/v1/tables/sync/delete/`,
             type: 'POST',
             contentType: 'application/json',
             headers: { "Authorization": `Bearer ${access_token}` }, // Set the content type
