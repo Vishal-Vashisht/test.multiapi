@@ -12,7 +12,7 @@ NOT_DELETE_TABLE = set((
 def paginate_response(page, page_size, query):
 
     offset = (page-1) * page_size
-    return query.offset(offset).limit(page_size).all()
+    return query.offset(offset).limit(page_size).all(), query.count()
 
 
 def delete_sqllite_data():

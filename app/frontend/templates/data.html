@@ -5,17 +5,17 @@
 {%endblock %}
 
 {%block head %}
-    <script type="text/javascript" src="{{ url_for('static', filename='js/script.js') }}"></script>
+<script type="text/javascript" src="{{ url_for('static', filename='js/script.js') }}"></script>
 {%endblock%}
 {% block content %}
-<div class="container text-center pt-3">
+<div class="container text-center">
     <div class="row">
-        <div class="d-grid gap-2">
-            <button type="button" class="btn btn-primary" id="btn-get-data" onclick="navigateToPage()">Get Data</button>
+        <div class="gap-1 d-flex justify-content-end">
+            {% include 'icons/refresh.html' %}
         </div>
     </div>
     <div class="row mt-2">
-        <div class="col" >
+        <div class="col">
             <div class="accordion accordion-flush unique-data-show" id="accordionFlushExample">
                 <div class="card">
                     <div class="card-header">
@@ -25,5 +25,21 @@
             </div>
         </div>
     </div>
+    <hr class="uk-divider-icon">
+    <div class="uk-child-width-1-3@s" uk-grid id="summary-row">
+        <div>
+            <div class="uk-card uk-card-default uk-card-small uk-card-body">
+                <h4 class="uk-heading-line uk-text-center"><span>user app: Summary</span></h4>
+                <!-- <h3 class="uk-card-title">user app: Summary</h3> -->
+                <hr>
+                <h6 class="card-subtitle mb-2 text-body-secondary text-capitalize">Total Records: ${obj.count}</h6>
+
+            </div>
+        </div>
+    </div>
+    <!-- <div class="row gap-3 mb-3 mt-2" id="summary-row">
+    </div> -->
+    <hr class="uk-divider-icon">
+    
 </div>
 {%endblock%}

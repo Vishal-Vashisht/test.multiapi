@@ -1,0 +1,41 @@
+<div class="uk-grid uk-child-width-1-2@m uk-child-width-1-1@s" uk-grid>
+    <!-- Card 1: DB Data -->
+    <div>
+        <div class="uk-card uk-card-default uk-card-hover">
+            <div class="uk-card-header">
+                <div class="uk-grid-small uk-flex-middle" uk-grid>
+                    <div class="uk-width-expand">
+                        <h3 class="uk-card-title uk-margin-remove-bottom">DB DATA</h3>
+                    </div>
+                </div>
+            </div>
+            <div class="uk-card-body">
+                <p>View the data by clicking on view data button.</p>
+            </div>
+            <div class="uk-card-footer">
+                <a href="{{ url_for('home_bp.data_view') }}" class="uk-button uk-button-primary">View Data</a>
+            </div>
+        </div>
+    </div>
+
+    <!-- Card 2: Delete Data -->
+    <div>
+        <div class="uk-card uk-card-default uk-card-hover">
+            <div class="uk-card-header">
+                <div class="uk-grid-small uk-flex-middle" uk-grid>
+                    <div class="uk-width-expand">
+                        <h3 class="uk-card-title uk-margin-remove-bottom">DELETE DATA</h3>
+                    </div>
+                </div>
+            </div>
+            <div class="uk-card-body">
+                <p>Want to delete data from database?</p>
+            </div>
+            <div class="uk-card-footer">
+                <a href="#modal-sections" uk-toggle class="uk-button uk-button-danger">Delete data</a>
+                {% include 'components/modal.html' %}
+                <a href="#" class="uk-button uk-button-primary" id="deleteShowDetails">Show Details</a>
+            </div>
+        </div>
+    </div>
+</div>

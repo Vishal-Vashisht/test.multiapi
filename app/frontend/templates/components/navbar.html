@@ -1,0 +1,45 @@
+<nav class="uk-navbar-container uk-margin">
+    <div class="uk-container uk-background-secondary">
+        <div uk-navbar>
+
+            <div class="uk-navbar-left">
+                <a href="#offcanvas-slide" class="uk-button uk-navbar-toggle" uk-toggle="target: #offcanvas-reveal">
+                    <span uk-navbar-toggle-icon></span> <span class="uk-margin-small-left">Menu</span>
+                </a>
+            </div>
+            <div class="uk-navbar-right">
+
+                <ul class="uk-navbar-nav">
+                    <li>
+                        <a href="#" uk-icon="user"></a>
+                        <div class="uk-navbar-dropdown">
+                            <ul class="uk-nav uk-navbar-dropdown-nav">
+                                <li><a href="#" id="Log-out-btn">Sign Out
+                                    <span class="uk-margin-small-right" uk-icon="icon: sign-out">
+                                    </span></a>
+                                </li>
+                            </ul>
+                        </div>
+                    </li>
+                </ul>
+
+            </div>
+
+        </div>
+    </div>
+</nav>
+
+<div id="offcanvas-reveal" uk-offcanvas="mode: reveal; overlay: true" >
+    <div class="uk-offcanvas-bar">
+
+        <button class="uk-offcanvas-close" type="button" uk-close></button>
+        <ul class="uk-nav uk-nav-primary uk-nav-center uk-margin-auto-vertical">
+            <li class="uk-active"><a href="#">Active</a></li>
+            <li class="uk-nav-divider"></li>
+            <li class="uk-parent">
+                <a href="{{ url_for('home_bp.home_view') }}" uk-icon="icon: home">Dashboard</a>
+            </li>
+        </ul>
+        
+    </div>
+</div>
