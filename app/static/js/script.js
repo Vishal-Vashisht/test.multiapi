@@ -64,6 +64,7 @@ $(document).ready(function () {
 
     // If there are no rows, return an "empty" table message.
     const tableHtml = rows ? `
+    <div class="panel-body table-responsive">
       <table class="table" id="${tablename}${counter}">
         <thead class="table-light">
           <tr>
@@ -74,6 +75,7 @@ $(document).ready(function () {
           ${rows}
         </tbody>
       </table>
+    </div>
     ` : `
       <div>No data found</div>
     `;
