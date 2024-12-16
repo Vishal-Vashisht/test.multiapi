@@ -11,7 +11,7 @@ class DataAPIView(MethodView):
         page = request.args.get("page", default=1, type=int)
         size = request.args.get("size", default=10, type=int)
 
-        response = fetch_data(page, size)
+        response = fetch_data(page, size, "GET")
         return response, 200
 
     def post(self):
@@ -19,8 +19,9 @@ class DataAPIView(MethodView):
 
         page = data.get("page", 1)
         size = data.get("size", 10)
-
         response = fetch_data(page, size)
+
+        response.pop("page", None)
         return response, 200
 
 
