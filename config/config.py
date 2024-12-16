@@ -57,7 +57,7 @@ API_CONFIG = {
         "is_authenticated": True,
     },
     "/api/v1/data/": {
-        "methods": set(("GET",)),
+        "methods": set(("GET", "POST")),
         "is_authenticated": True,
         "query_params": {
             "page": {
