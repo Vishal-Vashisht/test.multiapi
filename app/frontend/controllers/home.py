@@ -30,4 +30,11 @@ homebp = Blueprint(
     static_folder="static")
 homebp.add_url_rule("/", view_func=HomeView.as_view("home_view"))
 homebp.add_url_rule("/data/", view_func=DataView.as_view("data_view"))
-homebp.add_url_rule("/login/", view_func=LoginView.as_view("login_view"))
+
+loginbp = Blueprint(
+    "login_bp", __name__,
+    url_prefix="/",
+    template_folder="../templates/",
+    static_folder="static")
+
+loginbp.add_url_rule("", view_func=LoginView.as_view("login_view"))

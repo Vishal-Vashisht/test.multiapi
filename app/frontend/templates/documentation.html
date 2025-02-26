@@ -1,0 +1,11 @@
+{% extends "base.html" %}
+
+{% block title%}
+{{title}}
+{%endblock %}
+{% block content %}
+<div id="swagger-ui"></div>
+{%endblock%}
+{% block bodyscripts %}
+<script type="text/javascript" src="{{ url_for('static', filename='js/doc.js') }}"></script>
+{%endblock bodyscripts%}

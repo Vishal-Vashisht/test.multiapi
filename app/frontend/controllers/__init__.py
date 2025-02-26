@@ -1,1 +1,2 @@
-from .home import homebp
+from .home import homebp, loginbp
+from .documentation import docbp

@@ -1,6 +1,8 @@
-from .middelware import ApplyAuthentication
 from flask import request
+
 from app.constants import logger
+
+from .middelware import ApplyAuthentication
 
 
 def _url_rule_to_authenticate(app):

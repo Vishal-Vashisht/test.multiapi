@@ -9,12 +9,13 @@ from app.api.controllers.sample_controller import sample_bp
 from app.api.controllers.data_controller import data_bp
 from app.api.controllers.user_auth import user_bp
 from app.api.controllers.sync_async_delete_data_controller import delete_data_bp
+from app.api.controllers.documentation import docapi_view
 from app.api.models.models import db, migrate, insert_initial_data
 from app.scheduler import register_scheduler
 from config.redis_config import redis_client
 from app.middelware import register_middelware
 from app.commands import register_cli_commands
-from app.frontend.controllers import homebp
+from app.frontend.controllers import homebp, loginbp, docbp
 
 
 def create_app():
@@ -34,7 +35,10 @@ def create_app():
     app.register_blueprint(data_bp)
     app.register_blueprint(user_bp)
     app.register_blueprint(delete_data_bp)
+    app.register_blueprint(docapi_view)
 
     # register forntend bps
     app.register_blueprint(homebp)
+    app.register_blueprint(loginbp)
+    app.register_blueprint(docbp)
     return app
