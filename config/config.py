@@ -13,23 +13,105 @@ PASS = os.getenv("PASS")
 USERNAME = os.getenv("USERNAME")
 
 API_CONFIG = {
-    "/api/v1/convert/": {"methods": set(("POST",)), "is_authenticated": False},
+    "/api/v1/echo/": {"methods": set(("POST",)), "is_authenticated": False, "POST_data": {
+        "body": {"data": {"required": "true", "type": "object"}}}
+    },
     "/api/v1/trvlr/": {"methods": set(("GET",)), "is_authenticated": False},
     "/api/v1/auth/register/usercart/": {
         "methods": set(("POST",)),
         "is_authenticated": True,
+        "POST_data": {
+            "body": {
+                "name": {
+                    "type": "string",
+                    "required": "true"
+                },
+                "email": {
+                    "type": "string",
+                    "required": "true"
+                },
+                "gender": {
+                    "type": "string",
+                    "required": "true"
+                },
+                "refrence_id": {
+                    "type": "integer",
+                    "required": "false"
+                }
+            }
+        }
     },
     "/api/v1/auth/register/userapp/": {
         "methods": set(("POST",)),
         "is_authenticated": True,
+        "POST_data": {
+            "body": {
+                "name": {
+                    "type": "string",
+                    "required": "true"
+                },
+                "email": {
+                    "type": "string",
+                    "required": "true"
+                },
+                "gender": {
+                    "type": "string",
+                    "required": "true"
+                },
+                "refrence_id": {
+                    "type": "integer",
+                    "required": "false"
+                }
+            }
+        }
     },
     "/api/v1/auth/insert/user-app-post/": {
         "methods": set(("POST",)),
         "is_authenticated": True,
+        "POST_data": {
+            "body": {
+                "name": {
+                    "type": "string",
+                    "required": "true"
+                },
+                "email": {
+                    "type": "string",
+                    "required": "true"
+                },
+                "gender": {
+                    "type": "string",
+                    "required": "true"
+                },
+                "refrence_id": {
+                    "type": "integer",
+                    "required": "false"
+                }
+            }
+        }
     },
     "/api/v1/auth/parallel/": {
         "methods": set(("POST",)),
         "is_authenticated": True,
+        "POST_data": {
+            "body": {
+                "name": {
+                    "type": "string",
+                    "required": "true"
+                },
+                "email": {
+                    "type": "string",
+                    "required": "true"
+                },
+                "gender": {
+                    "type": "string",
+                    "required": "true"
+                },
+                "refrence_id": {
+                    "type": "integer",
+                    "required": "false"
+                }
+            }
+        }
     },
     "/api/v1/sample/": {
         "methods": set(("GET",)),
@@ -38,6 +120,12 @@ API_CONFIG = {
     "/api/v1/auth/user/login/": {
         "methods": set(("POST",)),
         "is_authenticated": False,
+        "POST_data": {
+            "body": {
+                "username": {"required": "true", "type": "string"},
+                "password": {"required": "true", "type": "string"},
+            }
+        },
     },
     "/api/v1/tables/async/delete/": {
         "methods": set(("POST",)),
@@ -50,12 +138,37 @@ API_CONFIG = {
     "/api/v1/tables/task/info/": {
         "methods": set(("GET",)),
         "is_authenticated": True,
+        "GET_data": {
+            "query_params": {"process_id": {"type": "string", "required": "true"}}
+        },
     },
     "/api/v1/data/": {
         "methods": set(("GET", "POST")),
         "is_authenticated": True,
-        "query_params": {"page": {"type": "integer"}, "size": {"type": "integer"}},
+        "GET_data": {
+            "query_params": {
+                "page": {
+                    "type": "integer",
+                    "required": "false"},
+                "size": {
+                    "type": "integer",
+                    "required": "false"
+                }
+            }
+        },
+        "POST_data": {
+            "query_params": {
+                "page": {
+                    "type": "integer",
+                    "required": "false"},
+                "size": {
+                    "type": "integer",
+                    "required": "false"
+                }
+            }
+        }
     },
+    # Frontend
     "/home/": {"methods": set(("GET",)), "is_authenticated": True, "feroute": True},
     "/home/data/": {
         "methods": set(("GET",)),
@@ -69,7 +182,7 @@ API_CONFIG = {
         "is_authenticated": False,
         "feroute": True,
     },
-    "/doc/": {"methods": set(("GET",)), "is_authenticated": False},
+    "/doc/": {"methods": set(("GET",)), "is_authenticated": True},
 }
 
 # if static folder changes define it in this list
@@ -90,7 +203,7 @@ API_DOC = {
         "securitySchemes": {
             "BearerAuth": {"type": "http", "scheme": "bearer", "bearerFormat": "JWT"}
         }
-    }
+    },
 }
 
 

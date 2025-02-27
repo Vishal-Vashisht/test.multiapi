@@ -1,8 +1,6 @@
-import json
-
-from flask import Blueprint, current_app, request
+from flask import Blueprint, current_app
 from flask.views import MethodView
-
+from app.custom_cache import Cache
 from ..services import documentation
 
 

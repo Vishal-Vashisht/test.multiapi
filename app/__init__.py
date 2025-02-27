@@ -16,6 +16,7 @@ from config.redis_config import redis_client
 from app.middelware import register_middelware
 from app.commands import register_cli_commands
 from app.frontend.controllers import homebp, loginbp, docbp
+from app.custom_cache import intialized_cache
 
 
 def create_app():
@@ -25,6 +26,7 @@ def create_app():
     CORS(app)
     db.init_app(app)
     migrate.init_app(app, db)
+    intialized_cache(app=app)
     # register_scheduler(app)
     register_middelware(app)
     register_cli_commands(app)

@@ -14,5 +14,5 @@ class ConvertToType(MethodView):
         return data
 
 
-convert_bp = Blueprint("covert_type", __name__, url_prefix="/api/v1/convert")
+convert_bp = Blueprint("covert_type", __name__, url_prefix="/api/v1/echo")
 convert_bp.add_url_rule("/", view_func=ConvertToType.as_view("post_covert_data")) # noqa
