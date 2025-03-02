@@ -42,7 +42,8 @@ def prepare_api_documentation(app):
                     "responses": {},
                 }
             )
-            api_method.update(deepcopy(body))
+            if method not in set(("GET", "HEAD")):
+                api_method.update(deepcopy(body))
             default_summary = f"{method} api for {end_of_endpoint}"
             summary = default_summary
             if api_data.get("is_authenticated"):
