@@ -27,7 +27,7 @@ orders (
 {
     "entity_name": "custom_users",
     "entity_alias": "Custom Users",
-    "columns_config": {"name": {"type": "string"}, "email ": {"type": "string", "constraint": "unique"}},
+    "columns_config": {"name": {"type": "string"}, "email": {"type": "string", "constraint": "unique"}},
     "relations_config": {}
 }
 

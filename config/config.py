@@ -12,7 +12,7 @@ ADMIN_MAIL = os.getenv("ADMIN_MAIL")
 PASS = os.getenv("PASS")
 USERNAME = os.getenv("USERNAME")
 RESTART_TIME = os.getenv("restart_time")
-
+DEPLOYED_ENV = os.getenv("DEPLOYED_ENV")
 API_CONFIG = {
     "/api/v1/echo/": {"methods": set(("POST",)), "is_authenticated": False, "POST_data": {
         "body": {"data": {"required": "true", "type": "object"}}}
