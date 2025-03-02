@@ -1,7 +1,10 @@
-from app.api.models.models import APIConfig, Entity, db
 import ast
-from sqlalchemy import Column, Integer, String, inspect
 import uuid
+
+from sqlalchemy import Column, Integer, String, inspect
+
+from app.api.models.models import APIConfig, Entity, db
+from app.utils import customize_route
 
 
 def task(app, dynamic_bp):
@@ -29,10 +32,10 @@ def register_models(app):
                 if col_name == "id":  # Skip id as it's already defined
                     continue
 
-                data_type = col_val.get("type", "VARCHAR")
-                if data_type == "INTEGER":
+                data_type = col_val.get("type", "string")
+                if data_type == "integer":
                     attrs[col_name] = Column(Integer)
-                elif data_type == "VARCHAR":
+                elif data_type == "string":
                     length = col_val.get("length", 255)
                     attrs[col_name] = Column(String(length))
                 # Add more data types as needed
@@ -40,6 +43,14 @@ def register_models(app):
             # Create and register the model class
             model_class = type(entity.entity_name.capitalize(), (db.Model,), attrs)
 
+            def serialize(self):
+                """Serialize the model instance into a dictionary."""
+                data = {}
+                # Loop through all columns defined in the model
+                for column in self.__table__.columns:
+                    data[column.name] = getattr(self, column.name)
+                return data
+            model_class.serialize = serialize
             # Store in a global registry for later use
             if not hasattr(app, "dynamic_models"):
                 app.dynamic_models = {}
@@ -80,15 +91,15 @@ def add_route_to_api_config(api_data, api_config):
     group = api_data.entity_rel.entity_alias
     api_config.update(
         {
-            f"api/v1/{api_route}": {
-                "methods": set((api_data.method,)),
+            f"/api/v1/{api_route}": {
+                "methods": set((api_data.method.upper(),)),
                 "is_authenticated": api_data.is_authenticated,
                 f"{api_data.method.upper()}_data": {
                     "body": ast.literal_eval(api_data.body),
                     "query_params": ast.literal_eval(api_data.query_params),
-                    "summary": api_data.description
+                    "summary": api_data.description,
                 },
-                "group": group
+                "group": group,
             }
         }
     )
@@ -106,20 +117,8 @@ def register_routes_in_blueprint(api_data, dynamic_bp):
     )
 
 
-def customize_route(api_route):
-    if api_route.startswith("/"):
-        api_route = api_route[1:]
-
-    if "api/v1/" in api_route:
-        api_route = api_route.replace("api/v1/", " ")
-
-    if not api_route.endswith("/"):
-        api_route += "/"
-    return api_route.strip()
-
-
 def remove_url_rules(app, bp):
-    endpoint_prefix = 'dynamic_apis.'
+    endpoint_prefix = "dynamic_apis."
     # Clean up URL map
     rules_to_remove = []
     for rule in app.url_map.iter_rules():

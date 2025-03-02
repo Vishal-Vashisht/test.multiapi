@@ -8,6 +8,8 @@ ERROR = "error"
 
 ALL_STATUSES = {SUCESS, START, FINSISH, ERROR}
 
+API_PREFIX = "api/v1/"
+
 DATA_TYPE_MAPPING = {
     "string": "VARCHAR",
     "integer": "INTEGER",

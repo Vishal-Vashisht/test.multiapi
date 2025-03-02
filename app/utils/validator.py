@@ -12,3 +12,15 @@ def none_validator(entity, fields_exclude: set = set()):
 
     if errors:
         raise ValidationError(errors)
+
+
+def customize_route(api_route):
+    if api_route.startswith("/"):
+        api_route = api_route[1:]
+
+    if "api/v1/" in api_route:
+        api_route = api_route.replace("api/v1/", " ")
+
+    if not api_route.endswith("/"):
+        api_route += "/"
+    return api_route.strip()

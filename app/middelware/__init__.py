@@ -2,7 +2,7 @@ from flask import request
 
 from app.constants import logger
 
-from .middelware import ApplyAuthentication, BlockRequest
+from .middelware import ApplyAuthentication, BlockRequest, ValidateRequest
 
 
 def _url_rule_to_authenticate(app):
@@ -36,9 +36,7 @@ def _url_rule_to_authenticate(app):
 
     if method not in supported_methods:
         logger.info("Supported method not found")
-        return {
-            "Invalid Method": "HTTP Method Not supported"
-        }, 404
+        return {"Invalid Method": "HTTP Method Not supported"}, 404
 
     is_authenticated = url_in_api_config.get("is_authenticated", True)
 
@@ -52,8 +50,11 @@ def before_request_middelware(app):
 
     atuh_middelware_inst = ApplyAuthentication(app, request)
     block_middelware_inst = BlockRequest(app)
+    val_request_inst = ValidateRequest(app, request)
     auth_middelware_list = set((atuh_middelware_inst._validate_auth,))
-    simple_middelware_list = set((block_middelware_inst._block_inc_request,))
+    simple_middelware_list = set(
+        (block_middelware_inst._block_inc_request, val_request_inst._validate)
+    )
 
     response, status = _url_rule_to_authenticate(app)
 

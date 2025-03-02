@@ -1,5 +1,8 @@
 import traceback
 from functools import wraps
+from flask import request, current_app
+from flask.views import MethodView
+
 
 from sqlalchemy import inspect, text
 
@@ -9,8 +12,10 @@ from app.constants import logger
 from .schemas import (API_CONFIG_BODY_VALIDATOR,
                       API_CONFIG_QUERY_PARAMS_VALIDATOR, realtion_schema,
                       schema_columns)
-from .validator import none_validator
+from .validator import none_validator, customize_route
 from .exceptions import ValidationError
+from .serializer import serialize_response, deserialize
+from .entity import Requests
 
 MAIN_DB = set(("postgresql", "mysql", "oracle"))
 NOT_DELETE_TABLE = set(
@@ -92,3 +97,61 @@ def class_error_handler(cls):
             decorated_func = __class_error_handler(attr_value)
             setattr(cls, attr_name, decorated_func)
     return cls
+
+
+def __class_api_request(func):
+
+    def wrapper(self, *args, **kwargs):
+        path = str(request.url_rule)
+        method = request.method
+        app = current_app
+        api_config = app.config.get("API_CONFIG", {})
+
+        dedicated_config = api_config.get(path, {})
+        data_config = dedicated_config.get(f"{method.upper()}_data", {})
+        _query_params = data_config.get('query_params', {})
+        _payload = data_config.get('body', {})
+
+        query_params = clean_queryparams(_query_params, request.args)
+        data = {}
+        if request.data:
+            data = request.get_json()
+        payload = clean_payload(_payload, data)
+
+        _request = Requests(
+            method=method,
+            path=path,
+            query_params=query_params,
+            body=payload
+        )
+
+        MethodView._request = _request
+        resp = func(self, **kwargs)
+
+        return resp
+
+    return wrapper
+
+
+def class_api_request(cls):
+    decorate_methods = set(("get", "post", "delete", "patch", "put", "head"))
+    for attr_name, attr_value in cls.__dict__.items():
+        if (
+            callable(attr_value)
+            and not attr_name.startswith("__")
+            and attr_name in decorate_methods
+        ):
+            decorated_func = __class_api_request(attr_value)
+            setattr(cls, attr_name, decorated_func)
+    return cls
+
+
+def clean_queryparams(query_params, request_query_param):
+
+    query_param = deserialize(query_params, dict(request_query_param))
+    return query_param
+
+
+def clean_payload(payload, request_payload):
+    payload = deserialize(payload, request_payload)
+    return payload

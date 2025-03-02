@@ -6,7 +6,10 @@ from app.utils import (
     API_CONFIG_QUERY_PARAMS_VALIDATOR,
     ValidationError,
     none_validator,
+    customize_route
 )
+
+from app.constants import API_PREFIX
 
 
 def validations(entity):
@@ -40,9 +43,10 @@ def create_api_config(entity):
     if APIConfig.query.filter_by(route=entity.route.lower()).first():
         raise ValidationError({"error": "Route already exists"})
 
+    route = customize_route(api_route=entity.route)
     api_inst = APIConfig(
         name=entity.name,
-        route=entity.route,
+        route=f"{API_PREFIX}{route}",
         method=entity.method,
         description=entity.description,
         body=str(entity.body),

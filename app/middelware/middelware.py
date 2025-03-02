@@ -1,6 +1,6 @@
 from app.constants import logger
 import time
-
+from app.utils import deserialize
 
 class ApplyAuthentication:
 
@@ -30,6 +30,20 @@ class ApplyAuthentication:
         return None, None
 
 
+class ValidateRequest:
+
+    def __init__(self, app, request):
+        self._local_api_config = app.config.get("API_CONFIG", {})
+        self._request = request
+
+    def _validate(self):
+        path = self._request.path
+        method = self._request.method
+        dedicated_api_config = self._local_api_config.get(path)
+
+        return None, None
+
+
 class BlockRequest:
 
     def __init__(self, app):
@@ -40,7 +54,6 @@ class BlockRequest:
 
     def _block_inc_request(self):
         if self._block_request:
-            print(self._restart_time)
             current_time = time.localtime()
             time_diff = time.mktime(self._restart_time) - time.mktime(current_time)
 
@@ -49,7 +62,7 @@ class BlockRequest:
             seconds = int(time_diff % 60)
             return {
                 "msg": "Application is preparing for sync, further calls, are restricted till then, will let you once application is available.",
-                "time_left_to_restart": f"Application will restart in {hours} hours, {minutes} minutes, and {seconds} seconds"
+                "time_left_to_restart": f"Application will restart in {hours} hours, {minutes} minutes, and {seconds} seconds",
             }, 503
 
         return None, None
