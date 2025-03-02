@@ -14,6 +14,8 @@ def task(app, dynamic_bp):
 
 def register_models(app):
     with app.app_context():
+        if not validate_table_in_db(Entity.__tablename__):
+            return
         entities = Entity.query.all()
 
         for entity in entities:
