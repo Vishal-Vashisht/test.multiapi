@@ -8,6 +8,14 @@ ERROR = "error"
 
 ALL_STATUSES = {SUCESS, START, FINSISH, ERROR}
 
+DATA_TYPE_MAPPING = {
+    "string": "VARCHAR",
+    "integer": "INTEGER",
+    "text": "TEXT",
+    "date": "DATE"
+}
+
+DEFAULT_COLUMN = {"id": {"type": "Integer", "constraint": "PRIMARY KEY"}}
 
 # Create a logger object
 logger = logging.getLogger(__name__)

@@ -12,7 +12,7 @@ db = SQLAlchemy()
 
 
 class UserCart(db.Model):
-    __tablename__ = 'user_cart'
+    __tablename__ = "user_cart"
 
     # id = db.Column(UUID(as_uuid=True), primary_key=True, default=uuid.uuid4)
     user_id = db.Column(db.Integer, primary_key=True, autoincrement=True)
@@ -49,7 +49,7 @@ class UserApp(db.Model):
 
 class UserAppPostData(db.Model):
 
-    __tablename__ = 'user_app_post_data'
+    __tablename__ = "user_app_post_data"
 
     # id = db.Column(UUID(as_uuid=True), primary_key=True, default=uuid.uuid4)
     user_id = db.Column(db.Integer, primary_key=True, autoincrement=True)
@@ -68,7 +68,7 @@ class UserAppPostData(db.Model):
 
 class ParallelData(db.Model):
 
-    __tablename__ = 'parallel'
+    __tablename__ = "parallel"
 
     # id = db.Column(UUID(as_uuid=True), primary_key=True, default=uuid.uuid4)
     user_id = db.Column(db.Integer, primary_key=True, autoincrement=True)
@@ -87,7 +87,7 @@ class ParallelData(db.Model):
 
 class DailyDataDelete(db.Model):
 
-    __tablename__ = 'daily_data_delete'
+    __tablename__ = "daily_data_delete"
 
     # id = db.Column(UUID(as_uuid=True), primary_key=True, default=uuid.uuid4)
     id = db.Column(db.Integer, primary_key=True, autoincrement=True)
@@ -134,20 +134,22 @@ class Users(db.Model):
 
 class BGTasks(db.Model):
 
-    __tablename__ = 'bg_tasks'
+    __tablename__ = "bg_tasks"
 
     id = db.Column(db.Integer, primary_key=True, autoincrement=True)
     task_name = db.Column(db.Integer, nullable=False)
     is_deleted = db.Column(db.Boolean, default=False)
     is_active = db.Column(db.Boolean, default=True)
-    task_status = db.Column(db.Integer, db.ForeignKey('task_status.status_id'),
-                            nullable=False)
+    task_status = db.Column(
+        db.Integer, db.ForeignKey("task_status.status_id"), nullable=False
+    )
     task_id = db.Column(db.String, nullable=False)
     created_date = db.Column(db.DateTime, server_default=db.func.now())
-    modified_date = db.Column(db.DateTime, server_default=db.func.now(), onupdate=db.func.now())
+    modified_date = db.Column(
+        db.DateTime, server_default=db.func.now(), onupdate=db.func.now()
+    )
 
-    task_status_ref = db.relationship(
-        "TaskStatus", backref="bg_tasks", lazy=True)
+    task_status_ref = db.relationship("TaskStatus", backref="bg_tasks", lazy=True)
 
     def save(self):
         db.session.add(self)
@@ -169,8 +171,7 @@ class BGTaskResponse(db.Model):
     response_id = db.Column(db.Integer, primary_key=True, autoincrement=True)
     response = db.Column(db.TEXT, nullable=False)
     created_date = db.Column(db.DateTime, default=func.now())
-    task_id = db.Column(
-        db.Integer, db.ForeignKey('bg_tasks.id'), nullable=False)
+    task_id = db.Column(db.Integer, db.ForeignKey("bg_tasks.id"), nullable=False)
     created_date = db.Column(db.DateTime, server_default=db.func.now())
 
     bgtask = db.relationship("BGTasks", backref="bg_task_response", lazy=True)
@@ -202,6 +203,70 @@ class TaskStatus(db.Model):
             db.session.rollback()
 
 
+class Entity(db.Model):
+
+    __tablename__ = "entity"
+    id = db.Column(db.Integer, primary_key=True, autoincrement=True)
+    entity_name = db.Column(db.String, nullable=True)
+    entity_alias = db.Column(db.String, nullable=True)
+    columns_config = db.Column(db.String, nullable=False)
+    relations_config = db.Column(db.String, nullable=True)
+    created_date = db.Column(db.DateTime, server_default=db.func.now())
+
+    def save(self):
+        db.session.add(self)
+        try:
+            db.session.commit()
+        except Exception:
+            db.session.rollback()
+
+    def __str__(self):
+        return self.entity_name
+
+    def __repr__(self):
+        return super().__repr__()
+
+
+class APIConfig(db.Model):
+
+    __tablename__ = "api_config"
+    id = db.Column(db.Integer, primary_key=True, autoincrement=True)
+    name = db.Column(db.String, nullable=False)
+    route = db.Column(db.String, nullable=False)
+    method = db.Column(db.String, nullable=False)
+    description = db.Column(db.String, nullable=False)
+    body = db.Column(db.String, nullable=False)
+    query_params = db.Column(db.String, nullable=False)
+    response = db.Column(db.String, nullable=False)
+    is_authenticated = db.Column(db.Boolean, default=True)
+    entity = db.Column(
+        db.Integer, db.ForeignKey("entity.id"), nullable=False
+    )
+    created_date = db.Column(db.DateTime, server_default=db.func.now())
+
+    entity_rel = db.relationship("Entity", backref="api_config", lazy=True)
+
+    def save(self):
+        db.session.add(self)
+        try:
+            db.session.commit()
+        except Exception:
+            db.session.rollback()
+
+    def __str__(self):
+        return self.name
+
+    def __repr__(self):
+        return super().__repr__()
+
+
+class dummy(db.Model):
+
+    __tablename__ = "dummy"
+
+    id = db.Column(db.Integer, primary_key=True, autoincrement=True)
+
+
 def insert_initial_data(app):
 
     with app.app_context():
@@ -211,8 +276,8 @@ def insert_initial_data(app):
 
         logger.info("Initial data create script")
         if not Users.query.filter(
-                Users.username == _username,
-                Users.email == email).first():
+            Users.username == _username, Users.email == email
+        ).first():
             logger.info("--Inserting user data")
             user_inst = Users(
                 first_name="ADMIN",
@@ -222,8 +287,7 @@ def insert_initial_data(app):
                 is_active=True,
                 username=_username,
                 email=email,
-                password=generate_password_hash(_pass)
-
+                password=generate_password_hash(_pass),
             )
             user_inst.save()
 

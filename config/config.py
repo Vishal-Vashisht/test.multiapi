@@ -11,6 +11,7 @@ API_KEY = os.getenv("API_KEY")
 ADMIN_MAIL = os.getenv("ADMIN_MAIL")
 PASS = os.getenv("PASS")
 USERNAME = os.getenv("USERNAME")
+RESTART_TIME = os.getenv("restart_time")
 
 API_CONFIG = {
     "/api/v1/echo/": {"methods": set(("POST",)), "is_authenticated": False, "POST_data": {
@@ -168,6 +169,12 @@ API_CONFIG = {
             }
         }
     },
+    "/api/v1/entity/": {"methods": set(("POST", "GET")), "is_authenticated": False, "POST_data": {
+    }},
+    "/api/v1/api-config/": {"methods": set(("POST",)), "is_authenticated": False, "POST_data": {
+    }},
+    "/api/v1/sync/": {"methods": set(("POST",)), "is_authenticated": False, "POST_data": {
+    }},
     # Frontend
     "/home/": {"methods": set(("GET",)), "is_authenticated": True, "feroute": True},
     "/home/data/": {

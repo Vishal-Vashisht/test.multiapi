@@ -1,7 +1,7 @@
 from flask import Blueprint, request
 from flask.views import MethodView
-from ..models.models import UserApp, UserCart, UserAppPostData, ParallelData
-from ..entity import UserCartEntity, UserAppEntity, ParallelEntity
+from app.api.models.models import UserApp, UserCart, UserAppPostData, ParallelData
+from app.api.entity import UserCartEntity, UserAppEntity, ParallelEntity
 from app.constants import logger
 
 

@@ -1,7 +1,7 @@
 from flask import Blueprint, current_app
 from flask.views import MethodView
 from app.custom_cache import Cache
-from ..services import documentation
+from app.api.services import documentation
 
 
 class DocClass(MethodView):

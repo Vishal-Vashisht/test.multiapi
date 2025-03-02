@@ -2,7 +2,7 @@ from flask import request
 
 from app.constants import logger
 
-from .middelware import ApplyAuthentication
+from .middelware import ApplyAuthentication, BlockRequest
 
 
 def _url_rule_to_authenticate(app):
@@ -51,8 +51,9 @@ def _url_rule_to_authenticate(app):
 def before_request_middelware(app):
 
     atuh_middelware_inst = ApplyAuthentication(app, request)
+    block_middelware_inst = BlockRequest(app)
     auth_middelware_list = set((atuh_middelware_inst._validate_auth,))
-    simple_middelware_list = set()
+    simple_middelware_list = set((block_middelware_inst._block_inc_request,))
 
     response, status = _url_rule_to_authenticate(app)
 

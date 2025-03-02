@@ -31,23 +31,26 @@ def prepare_api_documentation(app):
         methods = api_data.get("methods")
         current_url = paths[api_url]
         end_of_endpoint = api_url.split("/")[-2]
+        group = api_data.get("group", "Default")
         for method in methods:
             current_url.update({method.lower(): {}})
             api_method = current_url.get(method.lower())
             api_method.update(
                 {
-                    "summary": f"{method} api for {end_of_endpoint}",
+                    "tags": [group],
                     "operationId": f"{method}{end_of_endpoint}",
                     "responses": {},
                 }
             )
+
+            default_summary = f"{method} api for {end_of_endpoint}"
+            summary = default_summary
             if api_data.get("is_authenticated"):
                 api_method.update({"security": [{"BearerAuth": []}]})
 
             if f"{method}_data" in api_data:
-
                 method_data = api_data.get(f"{method}_data", {})
-
+                summary = method_data.get("summary", default_summary)
                 if "body" in method_data and method_data.get("body"):
                     api_method.update(deepcopy(body))
                     props = (
@@ -77,4 +80,5 @@ def prepare_api_documentation(app):
                             }
                         )
 
+            api_method.update({"summary": summary})
     return api_docs

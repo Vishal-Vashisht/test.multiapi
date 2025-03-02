@@ -2,3 +2,77 @@
 testcase = db.session.query(TestCases).filter_by(test_case_id=item).first()
 print(testcase)
 
+
+
+{
+    "entity_name": "custom_users",
+    "entity_alias": "Custom Users",
+    "columns_config": {"name": {"type": "string"}, "email ": {"type": "string", "constraint": "unique"}},
+    "relations_config": {}
+}
+
+orders (
+    id INTEGER PRIMARY KEY AUTOINCREMENT,
+    order_date TEXT NOT NULL,
+    user_id INTEGER,
+    product_id INTEGER,
+    quantity INTEGER NOT NULL,
+    total_price REAL NOT NULL,
+    -- Foreign keys
+    FOREIGN KEY (user_id) REFERENCES users(id) ON DELETE CASCADE,
+    FOREIGN KEY (product_id) REFERENCES products(id) ON DELETE CASCADE
+);
+
+
+{
+    "entity_name": "custom_users",
+    "entity_alias": "Custom Users",
+    "columns_config": {"name": {"type": "string"}, "email ": {"type": "string", "constraint": "unique"}},
+    "relations_config": {}
+}
+
+# Product
+{
+    "entity_name": "Product",
+    "entity_alias": "Product",
+    "columns_config": {"name": {"type": "string"}, "Product_type" ": {"type": "string"}, "user": {"type": "integer"}},
+    "relations_config": {"fk_user": {"entity":1,"column": "user", "ref_column": "id"}}
+}
+
+# Orders
+
+{
+    "entity_name": "Orders",
+    "entity_alias": "Orders",
+    "columns_config": {
+        "name": {
+            "type": "string",
+            "length": 20
+        },
+        "Order_type": {
+            "type": "string",
+            "length": 20
+        },
+        "order_date": {
+            "type": "date"
+        },
+        "user_id": {
+            "type": "integer"
+        },
+        "product_id": {
+            "type": "integer"
+        }
+    },
+    "relations_config": {
+        "fk_order": {
+            "entity": 1,
+            "column": "user_id",
+            "ref_column": "id"
+        },
+        "fk_product": {
+            "entity": 2,
+            "column": "product_id",
+            "ref_column": "id"
+        }
+    }
+}
