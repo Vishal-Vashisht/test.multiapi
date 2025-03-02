@@ -23,10 +23,9 @@ def sync(restarts_in, app):
         app.restarts_in = int(restarts_in)
         ENV = app.config.get("DEPLOYED_ENV")
 
-    print(ENV)
+    time.sleep(int(restarts_in))
     if ENV == "pythonanywhere":
         logger.info("Restart Initiated for pythonanywhere")
         restart_script()
     else:
-        time.sleep(int(restarts_in))
         os.execv(sys.executable, ["python"] + sys.argv)
