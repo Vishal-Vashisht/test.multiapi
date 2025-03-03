@@ -3,11 +3,12 @@ from flask.views import MethodView
 from app.constants import logger
 from app.api.entity import CustomEntity
 from app.api.services import entity as entityserivice
-from app.utils import class_error_handler
+from app.utils import class_error_handler, class_api_request
 from app.api.models.models import db
 
 
 @class_error_handler
+@class_api_request
 class EntityView(MethodView):
 
     def post(self):
@@ -20,10 +21,9 @@ class EntityView(MethodView):
 
         return data
 
-    def get(self):
-        model = current_app.dynamic_models.get("custom_users")
-        print(model.query.all())
-        return {"df": "dfd"}
+    def get(self, pk=None):
+        resp = entityserivice.get_data(self._request, pk)
+        return resp, 200
 
     def delete(self):
         pass
@@ -37,3 +37,4 @@ class EntityView(MethodView):
 
 entity_bp = Blueprint("entity", __name__, url_prefix="/api/v1/entity")
 entity_bp.add_url_rule("/", view_func=EntityView.as_view("entity"))  # noqa
+entity_bp.add_url_rule("/<int:pk>/", view_func=EntityView.as_view("entity_pk_get"))  # noqa

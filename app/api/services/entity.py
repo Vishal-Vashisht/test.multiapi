@@ -5,7 +5,7 @@ from sqlalchemy import text
 
 from app.api.models.models import Entity, db
 from app.constants import DATA_TYPE_MAPPING, DEFAULT_COLUMN, logger
-from app.utils import ValidationError, realtion_schema, schema_columns
+from app.utils import ValidationError, realtion_schema, schema_columns, serialize_response
 
 
 def perform_validation(entity):
@@ -118,3 +118,18 @@ def create_entity(entity):
         "pk": entity_instance.id,
         "alias": entity_instance.entity_alias,
     }
+
+
+def get_data(request, pk):
+
+    query_params = request.query_params
+    query_set = Entity.query.all()
+    page = query_params.pop("page", 1)
+    page_size = query_params.pop("page_size", 10)
+    if pk:
+        query_set = Entity.query.get(pk)
+    if query_params:
+        query_set = Entity.query.filter_by(**query_params).all()
+
+    resp = serialize_response(query_set, ["*"], Entity)
+    return resp

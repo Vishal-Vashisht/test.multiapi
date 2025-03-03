@@ -76,7 +76,15 @@ orders (
         "relation_name": {
             "type": "object"
             "properties": {
-
+                "entity": {
+                    "type": "integer",
+                },
+                "column": {
+                    "type": "string"
+                },
+                "ref_column" : {
+                    "type": "string"
+                }
             }
         }
     }

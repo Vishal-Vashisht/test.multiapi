@@ -226,6 +226,15 @@ class Entity(db.Model):
     def __repr__(self):
         return super().__repr__()
 
+    def serialize(self):
+        return {
+            "pk": self.id,
+            "entity_name": self.entity_name,
+            "entity_alias": self.entity_alias,
+            "columns_config": self.columns_config,
+            "relations_config": self.relations_config,
+        }
+
 
 class APIConfig(db.Model):
 

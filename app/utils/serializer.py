@@ -38,15 +38,16 @@ def serialize_response(dataset, response_fields, model):
 def deserialize(config, payload):
 
     copy_config = config.copy()
+    local_config = deepcopy(config)
     schema = {
         "type": "object",
         "required": [],
         "properties": config
     }
 
-    cleaned_payload = _cleand_payload(copy_config, payload)
+    cleaned_payload = _cleand_payload(local_config, payload)
 
-    for key, value in config.items():
+    for key, value in local_config.items():
         if value.get("required"):
             schema["required"].append(key)
         elif not payload.get(key):

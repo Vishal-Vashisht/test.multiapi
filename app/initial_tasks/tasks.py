@@ -1,5 +1,6 @@
 import ast
 import uuid
+import re
 
 from sqlalchemy import Column, Integer, String, inspect
 
@@ -91,6 +92,7 @@ def add_route_to_api_config(api_data, api_config):
         return
     api_route = customize_route(api_data.route)
     group = api_data.entity_rel.entity_alias
+
     api_config.update(
         {
             f"/api/v1/{api_route}": {

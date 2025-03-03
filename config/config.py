@@ -115,7 +115,7 @@ API_CONFIG = {
     },
     "/api/v1/entity/": {
         "methods": set(("POST", "GET")),
-        "is_authenticated": False,
+        "is_authenticated": True,
         "POST_data": {
             "body": {
                 "entity_name": {"type": "string", "required": True},
@@ -151,9 +151,14 @@ API_CONFIG = {
             }
         },
     },
+    "/api/v1/entity/<int:pk>/": {
+        "methods": set(("GET",)),
+        "is_authenticated": True,
+        "GET_data": {}
+    },
     "/api/v1/api-config/": {
         "methods": set(("POST",)),
-        "is_authenticated": False,
+        "is_authenticated": True,
         "POST_data": {
             "body": {
                 "name": {
@@ -240,7 +245,7 @@ API_CONFIG = {
     },
     "/api/v1/sync/": {
         "methods": set(("POST",)),
-        "is_authenticated": False,
+        "is_authenticated": True,
         "POST_data": {},
     },
     # Frontend
