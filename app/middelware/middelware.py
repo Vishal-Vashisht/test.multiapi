@@ -1,6 +1,9 @@
-from app.constants import logger
 import time
+from flask import abort
+
+from app.constants import logger
 from app.utils import deserialize
+
 
 class ApplyAuthentication:
 
@@ -63,7 +66,6 @@ class BlockRequest:
             hours = int(time_diff // 3600)
             minutes = int((time_diff % 3600) // 60)
             seconds = int(time_diff % 60)
-
             return {
                 "msg": "Application is preparing for sync, further calls, are restricted till then, will let you once application is available.",
                 "time_left_to_restart": f"Application will restart in {hours} hours, {minutes} minutes, and {seconds} seconds",

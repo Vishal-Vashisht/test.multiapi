@@ -79,8 +79,8 @@ def __class_error_handler(func):
         except ValidationError as e:
             return e._msg, e._code
         except Exception as e:
-            print(e)
-            print(traceback.format_exc())
+            logger.info("error %s", e)
+            logger.info("error traceback %s", traceback.format_exc())
             return {"error": "Something went wrong we are try to fix this."}, 500
 
     return wrapper

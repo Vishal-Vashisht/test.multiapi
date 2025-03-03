@@ -17,7 +17,7 @@ API_CONFIG = {
     "/api/v1/echo/": {
         "methods": set(("POST",)),
         "is_authenticated": False,
-        "POST_data": {"body": {"data": {"required": "true", "type": "object"}}},
+        "POST_data": {"body": {"data": {"required": True, "type": "object"}}},
     },
     "/api/v1/trvlr/": {"methods": set(("GET",)), "is_authenticated": False},
     "/api/v1/auth/register/usercart/": {
@@ -25,10 +25,10 @@ API_CONFIG = {
         "is_authenticated": True,
         "POST_data": {
             "body": {
-                "name": {"type": "string", "required": "true"},
-                "email": {"type": "string", "required": "true"},
-                "gender": {"type": "string", "required": "true"},
-                "refrence_id": {"type": "integer", "required": "false"},
+                "name": {"type": "string", "required": True},
+                "email": {"type": "string", "required": True},
+                "gender": {"type": "string", "required": True},
+                "refrence_id": {"type": "integer", "required": False},
             }
         },
     },
@@ -37,10 +37,10 @@ API_CONFIG = {
         "is_authenticated": True,
         "POST_data": {
             "body": {
-                "name": {"type": "string", "required": "true"},
-                "email": {"type": "string", "required": "true"},
-                "gender": {"type": "string", "required": "true"},
-                "refrence_id": {"type": "integer", "required": "false"},
+                "name": {"type": "string", "required": True},
+                "email": {"type": "string", "required": True},
+                "gender": {"type": "string", "required": True},
+                "refrence_id": {"type": "integer", "required": False},
             }
         },
     },
@@ -49,10 +49,10 @@ API_CONFIG = {
         "is_authenticated": True,
         "POST_data": {
             "body": {
-                "name": {"type": "string", "required": "true"},
-                "email": {"type": "string", "required": "true"},
-                "gender": {"type": "string", "required": "true"},
-                "refrence_id": {"type": "integer", "required": "false"},
+                "name": {"type": "string", "required": True},
+                "email": {"type": "string", "required": True},
+                "gender": {"type": "string", "required": True},
+                "refrence_id": {"type": "integer", "required": False},
             }
         },
     },
@@ -61,10 +61,10 @@ API_CONFIG = {
         "is_authenticated": True,
         "POST_data": {
             "body": {
-                "name": {"type": "string", "required": "true"},
-                "email": {"type": "string", "required": "true"},
-                "gender": {"type": "string", "required": "true"},
-                "refrence_id": {"type": "integer", "required": "false"},
+                "name": {"type": "string", "required": True},
+                "email": {"type": "string", "required": True},
+                "gender": {"type": "string", "required": True},
+                "refrence_id": {"type": "integer", "required": False},
             }
         },
     },
@@ -77,8 +77,8 @@ API_CONFIG = {
         "is_authenticated": False,
         "POST_data": {
             "body": {
-                "username": {"required": "true", "type": "string"},
-                "password": {"required": "true", "type": "string"},
+                "username": {"required": True, "type": "string"},
+                "password": {"required": True, "type": "string"},
             }
         },
     },
@@ -94,7 +94,7 @@ API_CONFIG = {
         "methods": set(("GET",)),
         "is_authenticated": True,
         "GET_data": {
-            "query_params": {"process_id": {"type": "string", "required": "true"}}
+            "query_params": {"process_id": {"type": "string", "required": True}}
         },
     },
     "/api/v1/data/": {
@@ -102,14 +102,14 @@ API_CONFIG = {
         "is_authenticated": True,
         "GET_data": {
             "query_params": {
-                "page": {"type": "integer", "required": "false"},
-                "size": {"type": "integer", "required": "false"},
+                "page": {"type": "integer", "required": False},
+                "size": {"type": "integer", "required": False},
             }
         },
         "POST_data": {
             "query_params": {
-                "page": {"type": "integer", "required": "false"},
-                "size": {"type": "integer", "required": "false"},
+                "page": {"type": "integer", "required": False},
+                "size": {"type": "integer", "required": False},
             }
         },
     },
@@ -121,34 +121,19 @@ API_CONFIG = {
                 "entity_name": {"type": "string", "required": True},
                 "entity_alias": {"type": "string", "required": True},
                 "columns_config": {
-                    "type": "object",
-                    "properties": {
-                        "column_name": {
-                            "type": "object",
-                            "properties": {
-                                "type": {"type": "string", "required": True},
-                                "length": {"type": "string"},
-                                "constraint": {"type": "string"},
-                            },
-                        }
-                    },
-                    "required": True,
+                    "type": "object"
                 },
                 "relations_config": {
                     "type": "object",
-                    "properties": {
-                        "relation_name": {
-                            "type": "object",
-                            "properties": {
-                                "entity": {"type": "integer"},
-                                "column": {"type": "string"},
-                                "ref_column": {"type": "string"},
-                            },
-                        }
-                    },
-                    "required": False,
+                    "required": False
                 },
             }
+        },
+    },
+    "/api/v1/datatypes/": {
+        "methods": set(("GET",)),
+        "is_authenticated": True,
+        "POST_data": {
         },
     },
     "/api/v1/entity/<int:pk>/": {
@@ -207,7 +192,7 @@ API_CONFIG = {
                             "properties": {
                                 "type": {
                                     "type": "string",
-                                    "required": "true"
+                                    "required": True
                                 },
                                 "required": {
                                     "type": "boolean"
@@ -226,7 +211,7 @@ API_CONFIG = {
                             "properties": {
                                 "type": {
                                     "type": "string",
-                                    "required": "true"
+                                    "required": True
                                 },
                                 "required": {
                                     "type": "boolean"

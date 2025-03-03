@@ -13,6 +13,7 @@ from app.api.controllers.v1.entity import entity_bp
 from app.api.controllers.v1.api_config import apiconfig_bp
 from app.api.controllers.v1.documentation import docapi_view
 from app.api.controllers.v1.dynamic_api import dynamic_bp
+from app.api.controllers.v1.datatypes import datatype_bp
 from app.api.models.models import db, migrate, insert_initial_data
 from app.api.controllers.v1.sync import sync_bp
 from app.scheduler import register_scheduler
@@ -22,6 +23,7 @@ from app.commands import register_cli_commands
 from app.frontend.controllers import homebp, loginbp, docbp
 from app.custom_cache import intialized_cache
 from app.initial_tasks import task
+from app.error_handler import initialize_error_handler
 
 
 def create_app():
@@ -32,6 +34,7 @@ def create_app():
     db.init_app(app)
     migrate.init_app(app, db)
     intialized_cache(app=app)
+    initialize_error_handler(app=app)
     # register_scheduler(app)
     register_middelware(app)
     register_cli_commands(app)
@@ -46,6 +49,7 @@ def create_app():
     app.register_blueprint(entity_bp)
     app.register_blueprint(apiconfig_bp)
     app.register_blueprint(sync_bp)
+    app.register_blueprint(datatype_bp)
 
     # register forntend bps
     app.register_blueprint(homebp)

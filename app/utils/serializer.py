@@ -49,6 +49,9 @@ def deserialize(config, payload):
 
     for key, value in local_config.items():
         if value.get("required"):
+            val = value.get("required")
+            if isinstance(val, bool):
+                val = str(val).lower()
             schema["required"].append(key)
         elif not payload.get(key):
             schema["properties"].pop(key, None)
@@ -62,7 +65,10 @@ def _valid_args(schema, payload):
 
     errors = []
     for e in validator.iter_errors(payload):
-        errors.append({"name": e.path[0], "error": e.message})
+        path = e.message.split(" ")[0][1:-1]
+        if e.path:
+            path = e.path[0]
+        errors.append({"name": path, "error": e.message})
 
     if errors:
         raise ValidationError(errors)

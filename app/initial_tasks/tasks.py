@@ -1,63 +1,82 @@
 import ast
-import uuid
 import re
+import uuid
 
-from sqlalchemy import Column, Integer, String, inspect
+from sqlalchemy import (
+    Boolean,
+    Column,
+    Date,
+    DateTime,
+    Float,
+    Integer,
+    LargeBinary,
+    String,
+    inspect,
+)
 
-from app.api.models.models import APIConfig, Entity, db
+from app.api.models.models import APIConfig, DB_Datatypes, Entity, db
 from app.utils import customize_route
 
 
 def task(app, dynamic_bp):
-    update_custom_config(app, dynamic_bp)
-    register_models(app)
+    with app.app_context():
+        register_datatypes_in_app(app)
+        update_custom_config(app, dynamic_bp)
+        register_models(app)
 
 
 def register_models(app):
-    with app.app_context():
-        if not validate_table_in_db(Entity.__tablename__):
-            return
-        entities = Entity.query.all()
 
-        for entity in entities:
-            if hasattr(app, "dynamic_models"):
-                if entity.entity_name in app.dynamic_models:
-                    return
-            # Create SQLAlchemy model class dynamically
-            columns = ast.literal_eval(entity.columns_config)
-            attrs = {
-                "__tablename__": entity.entity_name,
-                "id": Column(Integer, primary_key=True),
-            }
+    if not validate_table_in_db(Entity.__tablename__):
+        return
+    entities = Entity.query.all()
 
-            # Add columns based on definition
-            for col_name, col_val in columns.items():
-                if col_name == "id":  # Skip id as it's already defined
-                    continue
+    for entity in entities:
+        if hasattr(app, "dynamic_models"):
+            if entity.entity_name in app.dynamic_models:
+                return
+        # Create SQLAlchemy model class dynamically
+        columns = ast.literal_eval(entity.columns_config)
+        attrs = {
+            "__tablename__": entity.entity_name,
+            "id": Column(Integer, primary_key=True),
+        }
 
-                data_type = col_val.get("type", "string")
-                if data_type == "integer":
-                    attrs[col_name] = Column(Integer)
-                elif data_type == "string":
-                    length = col_val.get("length", 255)
-                    attrs[col_name] = Column(String(length))
-                # Add more data types as needed
+        d_types = app.db_datatypes
+        d_types_without_length = app.dtypes_without_length
+        # Add columns based on definition
+        for col_name, col_val in columns.items():
+            if col_name == "id":  # Skip id as it's already defined
+                continue
 
-            # Create and register the model class
-            model_class = type(entity.entity_name.capitalize(), (db.Model,), attrs)
+            allow_length = True
+            data_type = col_val.get("type", "int")
+            if data_type in d_types_without_length:
+                allow_length = False
+            d_data_type = d_data_type = getattr(Column, d_types.get(data_type, "String"), String)
+            if allow_length:
+                length = col_val.get("length", 255)
+                attrs[col_name] = Column(d_data_type(length))
+            else:
+                attrs[col_name] = Column(d_data_type)
+            # Add more data types as needed
 
-            def serialize(self):
-                """Serialize the model instance into a dictionary."""
-                data = {}
-                # Loop through all columns defined in the model
-                for column in self.__table__.columns:
-                    data[column.name] = getattr(self, column.name)
-                return data
-            model_class.serialize = serialize
-            # Store in a global registry for later use
-            if not hasattr(app, "dynamic_models"):
-                app.dynamic_models = {}
-            app.dynamic_models[entity.entity_name] = model_class
+        # Create and register the model class
+        model_class = type(entity.entity_name.capitalize(), (db.Model,), attrs)
+
+        def serialize(self):
+            """Serialize the model instance into a dictionary."""
+            data = {}
+            # Loop through all columns defined in the model
+            for column in self.__table__.columns:
+                data[column.name] = getattr(self, column.name)
+            return data
+
+        model_class.serialize = serialize
+        # Store in a global registry for later use
+        if not hasattr(app, "dynamic_models"):
+            app.dynamic_models = {}
+        app.dynamic_models[entity.entity_name] = model_class
 
 
 def update_custom_config(app, dynamic_bp):
@@ -69,17 +88,16 @@ def update_custom_config(app, dynamic_bp):
     #     if "dynamic_apis" in view_name:
     #         del app.view_functions[view_name]
     # remove_url_rules(app, dynamic_bp)
-    with app.app_context():
-        if not validate_table_in_db(APIConfig.__tablename__):
-            return
-        api_config_data = APIConfig.query.all()
-        if app.blueprints.get("dynamic_apis"):
-            del app.blueprints["dynamic_apis"]
-        for api_data in api_config_data:
-            add_route_to_api_config(api_data, api_config)
-            register_routes_in_blueprint(api_data, dynamic_bp)
+    if not validate_table_in_db(APIConfig.__tablename__):
+        return
+    api_config_data = APIConfig.query.all()
+    if app.blueprints.get("dynamic_apis"):
+        del app.blueprints["dynamic_apis"]
+    for api_data in api_config_data:
+        add_route_to_api_config(api_data, api_config)
+        register_routes_in_blueprint(api_data, dynamic_bp)
 
-        app.register_blueprint(dynamic_bp)
+    app.register_blueprint(dynamic_bp)
 
 
 def validate_table_in_db(table_name):
@@ -137,3 +155,23 @@ def remove_url_rules(app, bp):
     # Create and register fresh blueprint
     new_bp = bp
     app.register_blueprint(new_bp)
+
+
+def register_datatypes_in_app(app):
+
+    if not validate_table_in_db(DB_Datatypes.__tablename__):
+        return
+    data = DB_Datatypes.query.all()
+    datatypes = {}
+    for dtype_ins in data:
+        datatypes[dtype_ins.data_type] = dtype_ins.s_data_type
+    app.db_datatypes = datatypes
+    app.dtypes_without_length = {
+        "INTEGER",
+        "REAL",
+        "BLOB",
+        "BOOLEAN",
+        "DATE",
+        "DATETIME",
+        "TIMESTAMP",
+    }

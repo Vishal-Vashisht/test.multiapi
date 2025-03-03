@@ -14,10 +14,10 @@ class EntityView(MethodView):
     def post(self):
         data = request.get_json()
         entity = CustomEntity(**data)
-
+        app = current_app._get_current_object()
         entityserivice.perform_validation(entity)
-        entityserivice.schema_validation(entity)
-        data = entityserivice.create_entity(entity)
+        entityserivice.schema_validation(entity, app)
+        data = entityserivice.create_entity(entity, app)
 
         return data
 

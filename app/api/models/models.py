@@ -236,6 +236,35 @@ class Entity(db.Model):
         }
 
 
+class DB_Datatypes(db.Model):
+    __tablename__ = "db_datatypes"
+    id = db.Column(db.Integer, primary_key=True, autoincrement=True)
+    data_type = db.Column(db.String, nullable=False)
+    s_data_type = db.Column(db.String, nullable=False)
+    target_db = db.Column(db.String, nullable=False)
+
+    def save(self):
+        db.session.add(self)
+        try:
+            db.session.commit()
+        except Exception:
+            db.session.rollback()
+
+    def __str__(self):
+        return self.data_type
+
+    def __repr__(self):
+        return super().__repr__()
+
+    def serialize(self):
+        return {
+            "pk": self.id,
+            "data_type": self.data_type,
+            "s_data_type": self.s_data_type,
+            "target_db": self.target_db,
+        }
+
+
 class APIConfig(db.Model):
 
     __tablename__ = "api_config"
@@ -248,9 +277,7 @@ class APIConfig(db.Model):
     query_params = db.Column(db.String, nullable=False)
     response = db.Column(db.String, nullable=False)
     is_authenticated = db.Column(db.Boolean, default=True)
-    entity = db.Column(
-        db.Integer, db.ForeignKey("entity.id"), nullable=False
-    )
+    entity = db.Column(db.Integer, db.ForeignKey("entity.id"), nullable=False)
     created_date = db.Column(db.DateTime, server_default=db.func.now())
 
     entity_rel = db.relationship("Entity", backref="api_config", lazy=True)
@@ -305,4 +332,13 @@ def insert_initial_data(app):
             task_data_raw = json.load(open("./app/data/task_status_data.json"))
             data = task_data_raw.get("data", {})
             db.session.bulk_insert_mappings(TaskStatus, data)
+            db.session.commit()
+
+        if DB_Datatypes.query.count() == 0:
+
+            logger.info("--- Inserting dbtypes ---")
+            # Create initial status data
+            task_data_raw = json.load(open("./app/data/datatype_data.json"))
+            data = task_data_raw.get("data", {})
+            db.session.bulk_insert_mappings(DB_Datatypes, data)
             db.session.commit()

@@ -1,0 +1,55 @@
+{
+    "data": [
+      {
+        "data_type": "integer",
+        "s_data_type": "Integer",
+        "target_db": "sqlite"
+      },
+      {
+        "data_type": "real",
+        "s_data_type": "Float",
+        "target_db": "sqlite"
+      },
+      {
+        "data_type": "text",
+        "s_data_type": "String",
+        "target_db": "sqlite"
+      },
+      {
+        "data_type": "blob",
+        "s_data_type": "LargeBinary",
+        "target_db": "sqlite"
+      },
+      {
+        "data_type": "boolean",
+        "s_data_type": "Boolean",
+        "target_db": "sqlite"
+      },
+      {
+        "data_type": "date",
+        "s_data_type": "Date",
+        "target_db": "sqlite"
+      },
+      {
+        "data_type": "datetime",
+        "s_data_type": "DateTime",
+        "target_db": "sqlite"
+      },
+      {
+        "data_type": "timestamp",
+        "s_data_type": "DateTime",
+        "target_db": "sqlite"
+      },
+      {
+        "data_type": "char",
+        "s_data_type": "String",
+        "target_db": "sqlite"
+      },
+      {
+        "data_type": "varchar",
+        "s_data_type": "String",
+        "target_db": "sqlite"
+      }
+    ]
+  }
+  

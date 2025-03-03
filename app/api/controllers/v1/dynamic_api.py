@@ -14,13 +14,13 @@ class DynamicAPIView(MethodView):
     def get(self, pk=None):
         model, api_config_entity = dapi_service.get_model(
             current_app, self._request)
-        resp = dapi_service.get_data(model, api_config_entity, pk)
+        resp = dapi_service.get_data(model, api_config_entity, pk, self._request)
         return resp, 200
 
     def post(self):
         model, api_config_entity = dapi_service.get_model(
             current_app, self._request)
-        resp = dapi_service.post_data(model, api_config_entity)
+        resp = dapi_service.post_data(model, api_config_entity, self._request)
         return resp, 201
 
     def put(self, pk=None):

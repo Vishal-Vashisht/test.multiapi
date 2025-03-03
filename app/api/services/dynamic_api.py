@@ -19,8 +19,8 @@ def get_model(current_app, request):
     return model, api_config
 
 
-def get_data(model, api_config_entity, pk):
-    query_params = dict(request.args)
+def get_data(model, api_config_entity, pk, request):
+    query_params = request.query_params
     page = query_params.pop("page", 1)
     page_size = query_params.pop("page_size", 10)
 
@@ -33,3 +33,7 @@ def get_data(model, api_config_entity, pk):
     resp_fields = api_config_entity.response
     resp = serialize_response(query_set, ast.literal_eval(resp_fields), model)
     return resp
+
+
+def post_data(model, api_config_entity, pk, reuest):
+    pass

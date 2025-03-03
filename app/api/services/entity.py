@@ -5,7 +5,12 @@ from sqlalchemy import text
 
 from app.api.models.models import Entity, db
 from app.constants import DATA_TYPE_MAPPING, DEFAULT_COLUMN, logger
-from app.utils import ValidationError, realtion_schema, schema_columns, serialize_response
+from app.utils import (
+    ValidationError,
+    realtion_schema,
+    schema_columns,
+    serialize_response,
+)
 
 
 def perform_validation(entity):
@@ -27,26 +32,36 @@ def perform_validation(entity):
         raise ValidationError({"error": "Entity already exists"})
 
 
-def schema_validation(entity):
+def schema_validation(entity, app):
+    with app.app_context():
+        d_types = app.db_datatypes
+    validate_columns_and_relation_config(entity, d_types)
 
-    validate_columns_and_relation_config(entity)
 
+def validate_columns_and_relation_config(entity, d_types):
 
-def validate_columns_and_relation_config(entity):
-
+    enum = schema_columns.get("additionalProperties").get("properties").get("type")
+    enum.update({"enum": d_types.keys()})
     validator_columns = Draft7Validator(schema_columns)
     errors = []
     for e in validator_columns.iter_errors(entity.columns_config):
-        errors.append({"name": e.path[0], "error": e.message})
+        path = e.message.split(" ")[0][1:-1]
+        if e.path:
+            path = e.path[0]
+        errors.append({"name": path, "error": e.message})
 
     validator_relations = Draft7Validator(realtion_schema)
     for e in validator_relations.iter_errors(entity.relations_config):
-        errors.append({"name": e.path[0], "error": e.message})
+        path = e.message.split(" ")[0][1:-1]
+        if e.path:
+            path = e.path[0]
+        errors.append({"name": path, "error": e.message})
     if errors:
         raise ValidationError(errors)
 
 
-def create_entity(entity):
+def create_entity(entity, app):
+    D_TYPE_MAPPING = app.db_datatypes
     CREAT_SCRIPT = f"CREATE TABLE IF NOT EXISTS {entity.entity_name} (id INTEGER PRIMARY KEY AUTOINCREMENT, "
     col_config = entity.columns_config
     col_relation = entity.relations_config
@@ -85,7 +100,7 @@ def create_entity(entity):
 
     for ind, (col_name, col_val) in enumerate(col_config.items(), 1):
 
-        d_type = DATA_TYPE_MAPPING.get(col_val.get("type", "VARCHAR"))
+        d_type = col_val.get("type", "VARCHAR")
         length = col_val.get("length", "")
         constraint = col_val.get("constraint", "")
         if ind == len(col_config):

@@ -103,7 +103,7 @@ def prepare_api_documentation(app):
                             {
                                 "name": param_name,
                                 "in": "query",
-                                "required": bool_map.get(param_value.get("required","").lower(), False),
+                                "required": bool_map.get(param_value.get("required",""), False),
                                 "schema": {"type": param_value.get("type", "string")},
                             }
                         )
