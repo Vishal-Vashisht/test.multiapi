@@ -60,6 +60,15 @@ class BlockRequest:
             hours = int(time_diff // 3600)
             minutes = int((time_diff % 3600) // 60)
             seconds = int(time_diff % 60)
+
+            if hours <= 0:
+                hours = 0
+
+            if minutes <= 0:
+                minutes = 0
+            if seconds <= 0:
+                seconds = 0
+
             return {
                 "msg": "Application is preparing for sync, further calls, are restricted till then, will let you once application is available.",
                 "time_left_to_restart": f"Application will restart in {hours} hours, {minutes} minutes, and {seconds} seconds",
