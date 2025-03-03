@@ -39,6 +39,51 @@ orders (
     "relations_config": {"fk_user": {"entity":1,"column": "user", "ref_column": "id"}}
 }
 
+{"entity_name" : {
+    "type": "string",
+    "required": "true"
+},
+"entity_alias": {
+    "type": "string",
+    "required": "true"
+},
+"columns_config": {
+    "type": "object",
+    "properties": {
+      "column_name": {
+        "type": "object",
+        "properties": {
+            "type" : {
+                "type": "string",
+               
+            },
+            "length" : {
+                "type": "string",
+               
+            },
+            "constraint" : {
+                "type": "string",
+               
+            }
+        }
+      }
+    },
+    "required": "true"
+},
+"relations_config": {
+    "type": "object",
+    "properties": {
+        "relation_name": {
+            "type": "object"
+            "properties": {
+
+            }
+        }
+    }
+    "required": "false"
+
+}
+}
 # Orders
 
 {
