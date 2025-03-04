@@ -16,6 +16,7 @@ from sqlalchemy import (
 
 from app.api.models.models import APIConfig, DB_Datatypes, Entity, db
 from app.utils import customize_route
+from app.constants import INITIAL_DATA_TYPES, DTYPE_WITHOUT_LENGTH
 
 
 def task(app, dynamic_bp):
@@ -31,6 +32,14 @@ def register_models(app):
         return
     entities = Entity.query.all()
 
+    
+    if not validate_table_in_db(DB_Datatypes.__tablename__):
+        d_types = INITIAL_DATA_TYPES
+        d_types_without_length = DTYPE_WITHOUT_LENGTH
+    else:
+        d_types = app.db_datatypes
+        d_types_without_length = app.dtypes_without_length
+
     for entity in entities:
         if hasattr(app, "dynamic_models"):
             if entity.entity_name in app.dynamic_models:
@@ -42,8 +51,6 @@ def register_models(app):
             "id": Column(Integer, primary_key=True),
         }
 
-        d_types = app.db_datatypes
-        d_types_without_length = app.dtypes_without_length
         # Add columns based on definition
         for col_name, col_val in columns.items():
             if col_name == "id":  # Skip id as it's already defined
@@ -166,12 +173,4 @@ def register_datatypes_in_app(app):
     for dtype_ins in data:
         datatypes[dtype_ins.data_type] = dtype_ins.s_data_type
     app.db_datatypes = datatypes
-    app.dtypes_without_length = {
-        "INTEGER",
-        "REAL",
-        "BLOB",
-        "BOOLEAN",
-        "DATE",
-        "DATETIME",
-        "TIMESTAMP",
-    }
+    app.dtypes_without_length = DTYPE_WITHOUT_LENGTH

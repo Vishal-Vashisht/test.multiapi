@@ -19,6 +19,17 @@ DATA_TYPE_MAPPING = {
 
 DEFAULT_COLUMN = {"id": {"type": "Integer", "constraint": "PRIMARY KEY"}}
 
+INITIAL_DATA_TYPES = {'integer': 'Integer', 'real': 'Float', 'text': 'String', 'blob': 'LargeBinary', 'boolean': 'Boolean', 'date': 'Date', 'datetime': 'DateTime', 'timestamp': 'DateTime', 'char': 'String', 'varchar': 'String'}
+
+DTYPE_WITHOUT_LENGTH = {
+        "INTEGER",
+        "REAL",
+        "BLOB",
+        "BOOLEAN",
+        "DATE",
+        "DATETIME",
+        "TIMESTAMP",
+    }
 # Create a logger object
 logger = logging.getLogger(__name__)
 
