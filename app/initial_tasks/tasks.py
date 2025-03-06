@@ -17,6 +17,8 @@ from sqlalchemy import (
 from app.api.models.models import APIConfig, DB_Datatypes, Entity, db
 from app.utils import customize_route
 from app.constants import INITIAL_DATA_TYPES, DTYPE_WITHOUT_LENGTH
+from collections import namedtuple
+from sqlalchemy import exc
 
 
 def task(app, dynamic_bp):
@@ -32,7 +34,6 @@ def register_models(app):
         return
     entities = Entity.query.all()
 
-    
     if not validate_table_in_db(DB_Datatypes.__tablename__):
         d_types = INITIAL_DATA_TYPES
         d_types_without_length = DTYPE_WITHOUT_LENGTH
@@ -50,7 +51,10 @@ def register_models(app):
             "__tablename__": entity.entity_name,
             "id": Column(Integer, primary_key=True),
         }
-
+        namedtupe_params = {
+            "field_names": ["id"],
+            "defaults": [0]
+        }
         # Add columns based on definition
         for col_name, col_val in columns.items():
             if col_name == "id":  # Skip id as it's already defined
@@ -58,32 +62,50 @@ def register_models(app):
 
             allow_length = True
             data_type = col_val.get("type", "int")
+            is_allow_null = col_val.get("not_null", True)
             if data_type in d_types_without_length:
                 allow_length = False
-            d_data_type = d_data_type = getattr(Column, d_types.get(data_type, "String"), String)
+            d_data_type = d_data_type = getattr(
+                Column, d_types.get(data_type, "String"), String
+            )
             if allow_length:
                 length = col_val.get("length", 255)
-                attrs[col_name] = Column(d_data_type(length))
+                attrs[col_name] = Column(d_data_type(length), nullable=is_allow_null)
             else:
-                attrs[col_name] = Column(d_data_type)
+                attrs[col_name] = Column(d_data_type, nullable=is_allow_null)
             # Add more data types as needed
+            namedtupe_params["field_names"].append(col_name)
+            namedtupe_params["defaults"].append("")
 
         # Create and register the model class
         model_class = type(entity.entity_name.capitalize(), (db.Model,), attrs)
 
         def serialize(self):
             """Serialize the model instance into a dictionary."""
+            global model_keys
             data = {}
             # Loop through all columns defined in the model
             for column in self.__table__.columns:
                 data[column.name] = getattr(self, column.name)
             return data
 
+        def save(self):
+            db.session.add(self)
+            try:
+                db.session.commit()
+            except (Exception, exc.SQLAlchemyError) as e:
+                print(e)
+                db.session.rollback()
+
         model_class.serialize = serialize
+        model_class.save = save
         # Store in a global registry for later use
         if not hasattr(app, "dynamic_models"):
             app.dynamic_models = {}
+            app.ENTITY = {}
         app.dynamic_models[entity.entity_name] = model_class
+        app.ENTITY[entity.entity_name.lower()] = namedtuple(
+            entity.entity_name, **namedtupe_params)
 
 
 def update_custom_config(app, dynamic_bp):

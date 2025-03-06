@@ -2,6 +2,7 @@ import ast
 
 from jsonschema import Draft7Validator
 from sqlalchemy import text
+import sqlalchemy
 
 from app.api.models.models import Entity, db
 from app.constants import DATA_TYPE_MAPPING, DEFAULT_COLUMN, logger
@@ -10,6 +11,7 @@ from app.utils import (
     realtion_schema,
     schema_columns,
     serialize_response,
+    recursive_dict_to_lower
 )
 
 
@@ -45,6 +47,7 @@ def validate_columns_and_relation_config(entity, d_types):
     validator_columns = Draft7Validator(schema_columns)
     errors = []
     for e in validator_columns.iter_errors(entity.columns_config):
+        print(e)
         path = e.message.split(" ")[0][1:-1]
         if e.path:
             path = e.path[0]
@@ -52,6 +55,7 @@ def validate_columns_and_relation_config(entity, d_types):
 
     validator_relations = Draft7Validator(realtion_schema)
     for e in validator_relations.iter_errors(entity.relations_config):
+        print(e)
         path = e.message.split(" ")[0][1:-1]
         if e.path:
             path = e.path[0]
@@ -117,7 +121,10 @@ def create_entity(entity, app):
 
     CREAT_SCRIPT += f"{columns}{REL_STR})"
     logger.info("Script %s", CREAT_SCRIPT)
-    db.session.execute(text(CREAT_SCRIPT))
+    try:
+        db.session.execute(text(CREAT_SCRIPT))
+    except sqlalchemy.exc.SQLAlchemyError as e:
+        print(e)
 
     col_config.update(DEFAULT_COLUMN)
     entity_instance = Entity(

@@ -5,6 +5,8 @@ def none_validator(entity, fields_exclude: set = set()):
 
     errors = []
     for key, value in entity._asdict().items():
+        if key == "pk":
+            key = "id"
         if key in fields_exclude:
             continue
         if not value:

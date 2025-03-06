@@ -37,13 +37,9 @@ def serialize_response(dataset, response_fields, model):
 
 def deserialize(config, payload):
 
-    copy_config = config.copy()
+    copy_config = deepcopy(config)
     local_config = deepcopy(config)
-    schema = {
-        "type": "object",
-        "required": [],
-        "properties": config
-    }
+    schema = {"type": "object", "required": [], "properties": copy_config}
 
     cleaned_payload = _cleand_payload(local_config, payload)
 
@@ -80,6 +76,11 @@ def _cleand_payload(config, payload):
     for key, value in config.items():
         if key in payload:
             cleaned_payload[key] = payload.get(key)
+        if value.get("arg_name") and key in payload:
+            # if arg_name which is actuall column name in config
+            # and payload contain the key of that arg replace it with orginal key
+            _val = cleaned_payload.pop(key, "")
+            cleaned_payload.update({value.get("arg_name"): _val})
 
     return cleaned_payload
 

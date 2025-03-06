@@ -42,7 +42,7 @@ API_CONFIG_BODY_VALIDATOR = {
         "type": "object",
         "properties": {
             "required": {
-                "type": "integer",
+                "type": "boolean",
             },
             "type": {"type": "string"},
         },
@@ -56,7 +56,7 @@ API_CONFIG_QUERY_PARAMS_VALIDATOR = {
         "type": "object",
         "properties": {
             "required": {
-                "type": "integer",
+                "type": "boolean",
             },
             "type": {"type": "string"},
         },

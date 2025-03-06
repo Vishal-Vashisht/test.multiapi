@@ -4,7 +4,7 @@ from ..entity.entity import Entity
 
 class APIConfig(NamedTuple):
 
-    id: int = 0
+    pk: int = 0
     name: str = ""
     route: str = ""
     method: str = ""
@@ -14,3 +14,4 @@ class APIConfig(NamedTuple):
     response: list = ["*"]
     is_authenticated: bool = True
     entity: Entity = Entity
+    created_date: str = ""

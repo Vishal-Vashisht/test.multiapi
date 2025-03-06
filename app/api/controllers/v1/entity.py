@@ -12,7 +12,8 @@ from app.api.models.models import db
 class EntityView(MethodView):
 
     def post(self):
-        data = request.get_json()
+        data = self._request.body
+        print(data)
         entity = CustomEntity(**data)
         app = current_app._get_current_object()
         entityserivice.perform_validation(entity)

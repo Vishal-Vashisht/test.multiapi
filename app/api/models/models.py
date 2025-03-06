@@ -6,6 +6,8 @@ from flask_sqlalchemy import SQLAlchemy
 from sqlalchemy.dialects.postgresql import UUID
 from sqlalchemy.sql import func
 from app.constants import logger
+import ast
+from sqlalchemy import exc
 
 migrate = Migrate()
 db = SQLAlchemy()
@@ -286,7 +288,7 @@ class APIConfig(db.Model):
         db.session.add(self)
         try:
             db.session.commit()
-        except Exception:
+        except (Exception, )as e:
             db.session.rollback()
 
     def __str__(self):
@@ -294,6 +296,29 @@ class APIConfig(db.Model):
 
     def __repr__(self):
         return super().__repr__()
+
+    def serialize(self):
+
+        if isinstance(self.body, str):
+            self.body = ast.literal_eval(self.body)
+        if isinstance(self.response, str):
+            self.response = ast.literal_eval(self.response)
+        if isinstance(self.query_params, str):
+            self.query_params = ast.literal_eval(self.query_params)
+
+        return {
+            "pk": self.id,
+            "name": self.name,
+            "route": self.route,
+            "method": self.method,
+            "description": self.description,
+            "body": self.body,
+            "query_params": self.query_params,
+            "response": self.response,
+            "is_authenticated": self.is_authenticated,
+            "entity": self.entity,
+            "created_date": self.created_date
+        }
 
 
 class dummy(db.Model):

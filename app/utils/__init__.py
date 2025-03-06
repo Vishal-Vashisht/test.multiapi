@@ -116,6 +116,7 @@ def __class_api_request(func):
         data = {}
         if request.data:
             data = request.get_json()
+        print("af", _payload)
         payload = clean_payload(_payload, data)
 
         _request = Requests(
@@ -148,10 +149,39 @@ def class_api_request(cls):
 
 def clean_queryparams(query_params, request_query_param):
 
+    request_query_param = recursive_dict_to_lower(request_query_param) 
     query_param = deserialize(query_params, dict(request_query_param))
     return query_param
 
 
 def clean_payload(payload, request_payload):
+    request_payload = recursive_dict_to_lower(request_payload)
     payload = deserialize(payload, request_payload)
     return payload
+
+
+def recursive_dict_to_lower(_dict):
+    new_dict = {}
+    for key, value in _dict.items():
+        # Convert the key to lowercase
+        new_key = key.lower()
+        if isinstance(value, dict):
+            # If the value is a dictionary, call the function recursively
+            new_dict[new_key] = recursive_dict_to_lower(value)
+        elif isinstance(value, list):
+            # If the value is a list, handle each item
+            new_dict[new_key] = [recursive_dict_to_lower(item) if isinstance(item, dict) else item for item in value]
+        else:
+            # If it's a value (not a dict or list), just copy the value
+            new_dict[new_key] = value
+    return new_dict
+
+
+def _custom_api_validation(payload, entity):
+    model_fields = entity._asdict()
+    for field, value in payload.items():
+        arg_name = value.get("arg_name")
+        if not arg_name and field not in model_fields:
+            raise ValidationError({"error": "field name or arg_name did not match attribute defined for field."})
+        if arg_name and arg_name.lower() not in model_fields:
+            raise ValidationError({"error": "field name or arg_name did not match attribute defined for field."})
