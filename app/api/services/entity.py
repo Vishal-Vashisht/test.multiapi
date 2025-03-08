@@ -119,7 +119,6 @@ def create_entity(entity, app):
         constraint = col_val.get("constraint", "")
         notnull = col_val.get("not_null", True)
 
-        col_config[col_name] = col_config.pop(org_col_name)
         notnull_constraint = ""
         if notnull:
             notnull_constraint = "NOT NULL"
