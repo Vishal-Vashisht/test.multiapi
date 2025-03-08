@@ -48,14 +48,14 @@ def prepare_api_documentation(app):
         methods = api_data.get("methods")
         current_url = paths[api_url]
         end_of_endpoint = api_url.split("/")[-2]
-        group = api_data.get("group", "Default")
+        group = api_data.get("group", "Internal")
 
         for method in methods:
             current_url.update({method.lower(): {}})
             api_method = current_url.get(method.lower())
             api_method.update(
                 {
-                    "tags": [group],
+                    "tags": [f"{group} APIs"],
                     "operationId": f"{method}{end_of_endpoint}",
                     "responses": {},
                 }
@@ -66,8 +66,7 @@ def prepare_api_documentation(app):
             api_method.update({"parameters": []})
             doc_params = api_method.get("parameters", [])
             default_summary = f"{method} api for {end_of_endpoint}"
-            summary = default_summary
-
+            description = ""
             if path_params:
                 for name, value in path_params.items():
                     doc_params.append(
@@ -84,7 +83,7 @@ def prepare_api_documentation(app):
 
             if f"{method}_data" in api_data:
                 method_data = api_data.get(f"{method}_data", {})
-                summary = method_data.get("summary", default_summary)
+                description = method_data.get("summary")
                 if "body" in method_data and method_data.get("body"):
                     props = (
                         api_method.get("requestBody", {})
@@ -108,5 +107,5 @@ def prepare_api_documentation(app):
                             }
                         )
 
-            api_method.update({"summary": summary})
+            api_method.update({"summary": default_summary, "description": description})
     return api_docs

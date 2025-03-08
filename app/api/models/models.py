@@ -27,8 +27,9 @@ class UserCart(db.Model):
         db.session.add(self)
         try:
             db.session.commit()
-        except Exception:
+        except (Exception, exc.SQLAlchemyError) as e:
             db.session.rollback()
+            raise e
 
 
 class UserApp(db.Model):
@@ -45,8 +46,9 @@ class UserApp(db.Model):
         db.session.add(self)
         try:
             db.session.commit()
-        except Exception:
+        except (Exception, exc.SQLAlchemyError) as e:
             db.session.rollback()
+            raise e
 
 
 class UserAppPostData(db.Model):
@@ -64,8 +66,9 @@ class UserAppPostData(db.Model):
         db.session.add(self)
         try:
             db.session.commit()
-        except Exception:
+        except (Exception, exc.SQLAlchemyError) as e:
             db.session.rollback()
+            raise e
 
 
 class ParallelData(db.Model):
@@ -83,8 +86,9 @@ class ParallelData(db.Model):
         db.session.add(self)
         try:
             db.session.commit()
-        except Exception:
+        except (Exception, exc.SQLAlchemyError) as e:
             db.session.rollback()
+            raise e
 
 
 class DailyDataDelete(db.Model):
@@ -101,8 +105,9 @@ class DailyDataDelete(db.Model):
         db.session.add(self)
         try:
             db.session.commit()
-        except Exception:
+        except (Exception, exc.SQLAlchemyError) as e:
             db.session.rollback()
+            raise e
 
 
 class Users(db.Model):
@@ -124,8 +129,9 @@ class Users(db.Model):
         db.session.add(self)
         try:
             db.session.commit()
-        except Exception:
+        except (Exception, exc.SQLAlchemyError) as e:
             db.session.rollback()
+            raise e
 
     def __str__(self):
         return self.first_name
@@ -157,9 +163,9 @@ class BGTasks(db.Model):
         db.session.add(self)
         try:
             db.session.commit()
-        except Exception as e:
-            logger.info("error in models BGTASK %s", str(e))
+        except (Exception, exc.SQLAlchemyError) as e:
             db.session.rollback()
+            raise e
 
     @classmethod
     def get_task(cls, task_id):
@@ -182,8 +188,9 @@ class BGTaskResponse(db.Model):
         db.session.add(self)
         try:
             db.session.commit()
-        except Exception:
+        except (Exception, exc.SQLAlchemyError) as e:
             db.session.rollback()
+            raise e
 
 
 class TaskStatus(db.Model):
@@ -201,8 +208,9 @@ class TaskStatus(db.Model):
         db.session.add(self)
         try:
             db.session.commit()
-        except Exception:
+        except (Exception, exc.SQLAlchemyError) as e:
             db.session.rollback()
+            raise e
 
 
 class Entity(db.Model):
@@ -219,8 +227,9 @@ class Entity(db.Model):
         db.session.add(self)
         try:
             db.session.commit()
-        except Exception:
+        except (Exception, exc.SQLAlchemyError) as e:
             db.session.rollback()
+            raise e
 
     def __str__(self):
         return self.entity_name
@@ -249,8 +258,9 @@ class DB_Datatypes(db.Model):
         db.session.add(self)
         try:
             db.session.commit()
-        except Exception:
+        except (Exception, exc.SQLAlchemyError) as e:
             db.session.rollback()
+            raise e
 
     def __str__(self):
         return self.data_type
@@ -288,8 +298,9 @@ class APIConfig(db.Model):
         db.session.add(self)
         try:
             db.session.commit()
-        except (Exception, )as e:
+        except (Exception, exc.SQLAlchemyError) as e:
             db.session.rollback()
+            raise e
 
     def __str__(self):
         return self.name
@@ -317,7 +328,7 @@ class APIConfig(db.Model):
             "response": self.response,
             "is_authenticated": self.is_authenticated,
             "entity": self.entity,
-            "created_date": self.created_date
+            "created_date": self.created_date,
         }
 
 
@@ -367,3 +378,29 @@ def insert_initial_data(app):
             data = task_data_raw.get("data", {})
             db.session.bulk_insert_mappings(DB_Datatypes, data)
             db.session.commit()
+
+
+def dynamic_save(model_inst: object):
+
+    if hasattr(model_inst, "save"):
+        model_inst.save()
+    else:
+        try:
+            db.session.add(model_inst)
+            db.session.commit()
+        except (Exception, exc.SQLAlchemyError) as e:
+            db.session.rollback()
+            raise e
+
+
+def dynamic_delete(model_inst):
+
+    if hasattr(model_inst, "delete"):
+        model_inst.save()
+    else:
+        try:
+            db.session.delete(model_inst)
+            db.session.commit()
+        except (Exception, exc.SQLAlchemyError) as e:
+            db.session.rollback()
+            raise e

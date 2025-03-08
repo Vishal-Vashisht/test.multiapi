@@ -1,3 +1,5 @@
+from app import constants as const
+
 from .exceptions import ValidationError
 
 
@@ -20,8 +22,8 @@ def customize_route(api_route):
     if api_route.startswith("/"):
         api_route = api_route[1:]
 
-    if "api/v1/" in api_route:
-        api_route = api_route.replace("api/v1/", " ")
+    if const.API_PREFIX in api_route:
+        api_route = api_route.replace(const.API_PREFIX, " ")
 
     if not api_route.endswith("/"):
         api_route += "/"

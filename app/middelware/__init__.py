@@ -1,8 +1,10 @@
 from flask import request
 
-from app.constants import logger
+from app import constants as const, messages as msg
 
 from .middelware import ApplyAuthentication, BlockRequest, ValidateRequest
+
+logger = const.logger
 
 
 def _url_rule_to_authenticate(app):
@@ -23,12 +25,12 @@ def _url_rule_to_authenticate(app):
         return False, None
 
     if not api_config:
-        return "Not Found", 404
+        return msg.NOT_FOUND, 404
 
     logger.info("url %s method %s", url_rule, method)
     if url_rule not in api_config:
         logger.info("url rule not found")
-        return "Resource Not found", 404
+        return msg.RES_NOT_FOUND, 404
 
     url_in_api_config = api_config.get(url_rule, {})
 
@@ -36,7 +38,7 @@ def _url_rule_to_authenticate(app):
 
     if method not in supported_methods:
         logger.info("Supported method not found")
-        return {"Invalid Method": "HTTP Method Not supported"}, 404
+        return {"Invalid Method": msg.METHOD_NOT_SUPPORTED}, 400
 
     is_authenticated = url_in_api_config.get("is_authenticated", True)
 

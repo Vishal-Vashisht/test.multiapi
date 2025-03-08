@@ -7,7 +7,7 @@ from flask.views import MethodView
 from sqlalchemy import inspect, text
 
 from app.api.models.models import db
-from app.constants import logger
+from app import constants as const, messages as msg
 
 from .schemas import (API_CONFIG_BODY_VALIDATOR,
                       API_CONFIG_QUERY_PARAMS_VALIDATOR, realtion_schema,
@@ -17,17 +17,7 @@ from .exceptions import ValidationError
 from .serializer import serialize_response, deserialize
 from .entity import Requests
 
-MAIN_DB = set(("postgresql", "mysql", "oracle"))
-NOT_DELETE_TABLE = set(
-    (
-        "alembic_version",
-        "daily_data_delete",
-        "internal_users",
-        "task_status",
-        "bg_task_response",
-        "bg_tasks",
-    )
-)
+logger = const.logger
 
 
 def paginate_response(page, page_size, query):
@@ -42,7 +32,7 @@ def delete_sqllite_data():
     tables = inspector.get_table_names()
 
     for table in tables:
-        if table in NOT_DELETE_TABLE:
+        if table in const.NOT_DELETE_TABLE:
             continue
         db.session.execute(text(f"DELETE FROM {table};"))
         logger.info("deleted data for %s", table)
@@ -59,9 +49,9 @@ def delete_main_db_data(dialect):
     tables = inspector.get_table_names()
 
     for table in tables:
-        if table in NOT_DELETE_TABLE:
+        if table in const.NOT_DELETE_TABLE:
             continue
-        if dialect == "postgresql":
+        if dialect == const.POSTGRESQL:
             db.session.execute(
                 text(f"TRUNCATE TABLE {table} RESTART IDENTITY CASCADE;")
             )
@@ -77,17 +67,17 @@ def __class_error_handler(func):
         try:
             return func(self, *args, **kwargs)
         except ValidationError as e:
-            return e._msg, e._code
+            return e._FORMAT_EXCEPTION
         except Exception as e:
             logger.info("error %s", e)
             logger.info("error traceback %s", traceback.format_exc())
-            return {"error": "Something went wrong we are try to fix this."}, 500
+            return {"error": msg.GENERAL_ERROR}, 500
 
     return wrapper
 
 
 def class_error_handler(cls):
-    decorate_methods = set(("get", "post", "delete", "patch", "put", "head"))
+    decorate_methods = const.DECORATE_METHODS
     for attr_name, attr_value in cls.__dict__.items():
         if (
             callable(attr_value)
@@ -116,7 +106,6 @@ def __class_api_request(func):
         data = {}
         if request.data:
             data = request.get_json()
-        print("af", _payload)
         payload = clean_payload(_payload, data)
 
         _request = Requests(
@@ -135,7 +124,7 @@ def __class_api_request(func):
 
 
 def class_api_request(cls):
-    decorate_methods = set(("get", "post", "delete", "patch", "put", "head"))
+    decorate_methods = const.DECORATE_METHODS
     for attr_name, attr_value in cls.__dict__.items():
         if (
             callable(attr_value)
@@ -181,7 +170,28 @@ def _custom_api_validation(payload, entity):
     model_fields = entity._asdict()
     for field, value in payload.items():
         arg_name = value.get("arg_name")
-        if not arg_name and field not in model_fields:
-            raise ValidationError({"error": "field name or arg_name did not match attribute defined for field."})
-        if arg_name and arg_name.lower() not in model_fields:
-            raise ValidationError({"error": "field name or arg_name did not match attribute defined for field."})
+        if not arg_name and field not in model_fields.get("body"):
+            raise ValidationError(msg=msg.API_CONF_FIELD_ARG_NOT_MATCH)
+        if arg_name and arg_name.lower() not in model_fields.get("body"):
+            raise ValidationError(msg=msg.API_CONF_FIELD_ARG_NOT_MATCH)
+
+
+def mod_col(column):
+    if not column:
+        return column
+
+    split_col = column.split(" ")
+    if len(split_col) > 1:
+        column = "_".join(split_col)
+    return column
+
+
+def mod_request(request, model_entity):
+
+    id = request.body.pop("id", None)
+    pk = request.body.pop("pk", None)
+
+    if hasattr(model_entity, "pk") and id:
+        request.body["pk"] = id
+    elif hasattr(model_entity, "id") and pk:
+        request.body["id"] = pk

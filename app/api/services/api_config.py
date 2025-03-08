@@ -7,10 +7,11 @@ from app.utils import (
     ValidationError,
     none_validator,
     customize_route,
-    _custom_api_validation
+    _custom_api_validation,
+    serialize_response
 )
 
-from app.constants import API_PREFIX
+from app import constants, messages
 
 
 def validations(entity):
@@ -27,12 +28,10 @@ def schema_validation(entity):
     errors = []
     body_validator = Draft7Validator(API_CONFIG_BODY_VALIDATOR)
     for e in body_validator.iter_errors(entity.body):
-        print("dfd1")
         errors.append({"name": e.path[0], "error": e.message})
 
     query_validator = Draft7Validator(API_CONFIG_QUERY_PARAMS_VALIDATOR)
     for e in query_validator.iter_errors(entity.query_params):
-        print("dfd")
         errors.append({"name": e.path[0], "error": e.message})
 
     if errors:
@@ -42,22 +41,21 @@ def schema_validation(entity):
 def create_api_config(entity):
 
     if not Entity.query.get(entity.entity):
-        raise ValidationError({"error": "Entity not exists"})
+        raise ValidationError(msg=messages.API_CONF_ENTITY_NOT_EXISTS)
 
     if APIConfig.query.filter_by(name=entity.name).first():
-        raise ValidationError({"error": "Name already exists"})
+        raise ValidationError(msg=messages.API_CONF_NAME_EXISTS)
 
     if APIConfig.query.filter_by(route=entity.route.lower()).first():
-        raise ValidationError({"error": "Route already exists"})
-    append_description = "Entitys attributes will be used as default payload"
+        raise ValidationError(msg=messages.API_CONF_ROUTE_EXISTS)
+
     route = customize_route(api_route=entity.route)
 
-    print(entity)
     api_inst = APIConfig(
         name=entity.name,
-        route=f"{API_PREFIX}{route}",
+        route=f"{constants.API_PREFIX}{route}",
         method=entity.method,
-        description=f"{append_description} {entity.description}",
+        description=f"{constants.API_CONF_DEFAULT_DESCRIPTION}\n{entity.description}",
         body=str(entity.body),
         is_authenticated=entity.is_authenticated,
         query_params=str(entity.query_params),
@@ -73,3 +71,18 @@ def create_api_config(entity):
         "route": api_inst.route,
         "method": api_inst.method,
     }
+
+
+def get_api_config(request, pk):
+
+    query_params = request.query_params
+    query_set = APIConfig.query.all()
+    page = query_params.pop("page", 1)
+    page_size = query_params.pop("page_size", 10)
+    if pk:
+        query_set = APIConfig.query.get(pk)
+    if query_params:
+        query_set = APIConfig.query.filter_by(**query_params).all()
+
+    resp = serialize_response(query_set, ["*"], APIConfig)
+    return resp

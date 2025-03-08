@@ -94,8 +94,8 @@ def register_models(app):
             try:
                 db.session.commit()
             except (Exception, exc.SQLAlchemyError) as e:
-                print(e)
                 db.session.rollback()
+                raise e
 
         model_class.serialize = serialize
         model_class.save = save

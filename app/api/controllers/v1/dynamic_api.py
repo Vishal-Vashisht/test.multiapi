@@ -12,34 +12,39 @@ from app.utils import ValidationError, class_error_handler, class_api_request
 class DynamicAPIView(MethodView):
 
     def get(self, pk=None):
-        model, api_config_entity, named_entity = dapi_service.get_model(
-            current_app, self._request)
-        resp = dapi_service.get_data(model, api_config_entity, pk, self._request, named_entity)
+        model, api_config_entity, model_entity = dapi_service.get_model(
+            current_app, self._request
+        )
+        resp = dapi_service.get_data(
+            model, api_config_entity, pk, self._request, model_entity
+        )
         return resp, 200
 
     def post(self):
-        model, api_config_entity, named_entity = dapi_service.get_model(
-            current_app, self._request)
-        a = api_config_entity.serialize()
-        resp = dapi_service.post_data(model, api_config_entity, self._request, named_entity)
+        model, api_config_entity, model_entity = dapi_service.get_model(
+            current_app, self._request
+        )
+        resp = dapi_service.post_data(
+            model, api_config_entity, self._request, model_entity
+        )
         return resp, 201
 
     def put(self, pk=None):
-        model, api_config_entity = dapi_service.get_model(
-            current_app, self._request)
-        resp = dapi_service.post_data(model, api_config_entity)
+        model, api_config_entity, model_entity = dapi_service.get_model(
+            current_app, self._request
+        )
+        resp = dapi_service.update_data(
+            model, api_config_entity, self._request, model_entity, pk
+        )
         return resp, 200
 
-    def patch(self, pk=None):
-        model, api_config_entity = dapi_service.get_model(
-            current_app, self._request)
-        resp = dapi_service.post_data(model, api_config_entity)
-        return resp, 200
-
-    def delete(self, pk):
-        model, api_config_entity = dapi_service.get_model(
-            current_app, self._request)
-        resp = dapi_service.post_data(model, api_config_entity)
+    def delete(self, pk=None):
+        model, api_config_entity, model_entity = dapi_service.get_model(
+            current_app, self._request
+        )
+        resp = dapi_service.delete_data(
+            model, api_config_entity, self._request, model_entity, pk
+        )
         return resp, 204
 
 

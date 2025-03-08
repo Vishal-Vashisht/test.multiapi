@@ -13,15 +13,6 @@ class EntityView(MethodView):
         resp = dtypeservice.get_data(self._request, pk)
         return resp, 200
 
-    def delete(self):
-        pass
-
-    def patch(self):
-        pass
-
-    def put(self):
-        pass
-
 
 datatype_bp = Blueprint("datatypes", __name__, url_prefix="/api/v1/datatypes")
 datatype_bp.add_url_rule("/", view_func=EntityView.as_view("entity"))  # noqa

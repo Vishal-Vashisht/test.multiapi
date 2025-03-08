@@ -4,3 +4,4 @@ from .user import Parellel as ParallelEntity
 from .user import UserApp as UserAppEntity
 from .user import UserAppPost as UserAppPostEntity
 from .user import UserCart as UserCartEntity
+from .dynamic_entity import ApiConfigDy as DynamicApiConfEntity

@@ -1,37 +1,41 @@
 import ast
+import uuid
 
 from jsonschema import Draft7Validator
 from sqlalchemy import text
 import sqlalchemy
 
 from app.api.models.models import Entity, db
-from app.constants import DATA_TYPE_MAPPING, DEFAULT_COLUMN, logger
+from app.constants import DEFAULT_COLUMN, logger
+from app import messages as msg
 from app.utils import (
     ValidationError,
     realtion_schema,
     schema_columns,
     serialize_response,
-    recursive_dict_to_lower
+    mod_col,
 )
 
 
 def perform_validation(entity):
     if not entity.entity_alias:
-        raise ValidationError({"error": "entity alias is required"})
+        raise ValidationError(msg=msg.ENTITY_ALIAS_REQUIRED)
+
     if not entity.entity_name:
-        raise ValidationError({"error": "entity name is required"})
+        raise ValidationError(msg=msg.ENTITY_NAME_REQUIRED)
 
     if not entity.columns_config:
-        raise ValidationError({"error": "column config is reuired"})
+        raise ValidationError(msg=msg.ENTITY_COL_CONFIG_REQUIRED)
 
     if not (
         isinstance(entity.columns_config, dict)
         or isinstance(entity.relations_config, dict)
     ):
-        raise ValidationError({"error": "Config is not valid"})
+        raise ValidationError(msg=msg.ENTITY_CONFIG_NOT_VALID)
 
-    if Entity.query.filter_by(entity_name=entity.entity_name).first():
-        raise ValidationError({"error": "Entity already exists"})
+    ent_name = mod_col(entity.entity_name)
+    if Entity.query.filter_by(entity_name=ent_name).first():
+        raise ValidationError(msg=msg.ENTITY_ALREADY_EXISTS)
 
 
 def schema_validation(entity, app):
@@ -65,8 +69,10 @@ def validate_columns_and_relation_config(entity, d_types):
 
 
 def create_entity(entity, app):
-    D_TYPE_MAPPING = app.db_datatypes
-    CREAT_SCRIPT = f"CREATE TABLE IF NOT EXISTS {entity.entity_name} (id INTEGER PRIMARY KEY AUTOINCREMENT, "
+
+    table_name = mod_col(entity.entity_name)
+    entity = entity._replace(entity_name=table_name)
+    CREAT_SCRIPT = f"CREATE TABLE IF NOT EXISTS {table_name} (id INTEGER PRIMARY KEY AUTOINCREMENT, "
     col_config = entity.columns_config
     col_relation = entity.relations_config
     columns = ""
@@ -80,33 +86,44 @@ def create_entity(entity, app):
             raw_rel_column = rel_val.get("column")
             raw_ref_column = rel_val.get("ref_column")
             rel_entity = Entity.query.get(rel_raw_entity)
+
             if not rel_entity:
-                raise ValidationError(
-                    {
-                        "error": "Table not exist, remove this relation for proceeding further."
-                    }
-                )
+                raise ValidationError(msg=msg.ENTITY_TABLE_NOT_EXIST)
+            if (
+                raw_rel_column.lower() not in col_config
+                and raw_rel_column.lower() != "id"
+            ):
+                raise ValidationError(msg=msg.ENTITY_COLUMN_NOT_EXIST_IN_CONFIG)
 
-            if raw_rel_column not in col_config and raw_rel_column.lower() != "id":
-                raise ValidationError({"error": "Column not found in column config."})
-
+            raw_ref_column = mod_col(raw_ref_column)
             table_columns = ast.literal_eval(rel_entity.columns_config)
             rel_column = table_columns.get(raw_ref_column)
-            if not rel_column:
-                raise ValidationError(
-                    {
-                        "error": "Column not exist, in refrence table remove this relation for proceeding further."
-                    }
-                )
 
-            REL_STR += f""",CONSTRAINT {rel_name} FOREIGN KEY ({raw_rel_column}) REFERENCES
+            # mod
+            raw_rel_column = mod_col(raw_rel_column)
+            rel_name = mod_col(rel_name)
+
+            if not rel_column:
+                raise ValidationError(msg=msg.ENTITY_COLUMN_NOT_EXIST)
+
+            REL_STR += f""",CONSTRAINT {rel_name}{str(uuid.uuid4())[:8]} FOREIGN KEY ({raw_rel_column}) REFERENCES
             {rel_entity.entity_name}({raw_ref_column})"""
 
     for ind, (col_name, col_val) in enumerate(col_config.items(), 1):
 
+        org_col_name = col_name.strip()
+        col_name = mod_col(org_col_name)
+
         d_type = col_val.get("type", "VARCHAR")
         length = col_val.get("length", "")
         constraint = col_val.get("constraint", "")
+        notnull = col_val.get("not_null", True)
+
+        col_config[col_name] = col_config.pop(org_col_name)
+        notnull_constraint = ""
+        if notnull:
+            notnull_constraint = "NOT NULL"
+
         if ind == len(col_config):
             columns += f"""{col_name} {d_type}"""
         else:
@@ -115,16 +132,19 @@ def create_entity(entity, app):
             columns += f"({str(length)})"
 
         if ind == len(col_config):
-            columns += f" {constraint}"
+            columns += f" {constraint} {notnull_constraint}"
         else:
-            columns += f" {constraint},"
+            columns += f" {constraint} {notnull_constraint},"
 
-    CREAT_SCRIPT += f"{columns}{REL_STR})"
+        columns = columns.strip()
+
+    CREAT_SCRIPT += f"{columns.strip()}{REL_STR})"
     logger.info("Script %s", CREAT_SCRIPT)
     try:
         db.session.execute(text(CREAT_SCRIPT))
     except sqlalchemy.exc.SQLAlchemyError as e:
-        print(e)
+        db.session.rollback()
+        raise e
 
     col_config.update(DEFAULT_COLUMN)
     entity_instance = Entity(

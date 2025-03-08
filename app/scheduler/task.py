@@ -2,11 +2,10 @@ import datetime
 
 from app.api.models.models import DailyDataDelete, db
 from app.utils import (
-    MAIN_DB,
     delete_main_db_data,
     delete_sqllite_data,
     )
-from app.constants import logger
+from app.constants import logger, MAIN_DB
 
 
 def Delete_database_data(app):

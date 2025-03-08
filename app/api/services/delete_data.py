@@ -1,11 +1,11 @@
 import json
 from app.utils import (
     delete_main_db_data,
-    delete_sqllite_data,
-    MAIN_DB)
+    delete_sqllite_data
+)
 
 from app.api.models.models import db, BGTasks, TaskStatus, BGTaskResponse
-from app.constants import logger
+from app.constants import logger, MAIN_DB
 
 
 def delete_data_async(app, thread_id):

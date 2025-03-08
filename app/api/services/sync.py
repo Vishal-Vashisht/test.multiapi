@@ -2,16 +2,17 @@ import os
 import sys
 import threading
 import time
-from flask import current_app
 from app.initial_tasks.pythonanywhere_restart import restart_script
-from app.constants import logger
+from app import messages as msg, constants as const
+
+logger = const.logger
 
 
 def restart_app(app):
     restarts_in = app.config.get("RESTART_TIME")
     thread = threading.Thread(target=sync, args=(restarts_in, app))
     thread.start()
-    return {"msg": f"sync process will start in {restarts_in}"}
+    return {"msg": f"{msg.SYNC_PROCESS_START} {restarts_in}"}
 
 
 def sync(restarts_in, app):
@@ -24,7 +25,7 @@ def sync(restarts_in, app):
         ENV = app.config.get("DEPLOYED_ENV")
 
     time.sleep(int(restarts_in))
-    if ENV == "pythonanywhere":
+    if ENV == const.SYNC_ENV:
         logger.info("Restart Initiated for pythonanywhere")
         restart_script()
     else:

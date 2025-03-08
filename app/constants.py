@@ -44,3 +44,30 @@ console_handler.setFormatter(formatter)
 # Add the handler to the logger
 logger.addHandler(console_handler)
 logger.setLevel(level=logging.INFO)
+
+
+# SYNC
+SYNC_ENV = 'pythonanywhere'
+
+
+# UTILS
+
+MAIN_DB = set(("postgresql", "mysql", "oracle"))
+NOT_DELETE_TABLE = set(
+    (
+        "alembic_version",
+        "daily_data_delete",
+        "internal_users",
+        "task_status",
+        "bg_task_response",
+        "bg_tasks",
+    )
+)
+
+POSTGRESQL = "postgresql"
+
+DECORATE_METHODS = set(("get", "post", "delete", "patch", "put", "head"))
+
+
+# VALIDATOR 
+API_PREFIX = "api/v1/"

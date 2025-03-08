@@ -124,8 +124,7 @@ API_CONFIG = {
                     "type": "object"
                 },
                 "relations_config": {
-                    "type": "object",
-                    "required": False
+                    "type": "object"
                 },
             }
         },
@@ -142,7 +141,7 @@ API_CONFIG = {
         "GET_data": {}
     },
     "/api/v1/api-config/": {
-        "methods": set(("POST",)),
+        "methods": set(("POST", "GET")),
         "is_authenticated": True,
         "POST_data": {
             "body": {
@@ -185,7 +184,6 @@ API_CONFIG = {
                 "body": {
                     "type": "object",
                     "description": "The request body for the API",
-                    "required": False,
                     "properties": {
                         "payload_key": {
                             "type": "object",
@@ -204,7 +202,6 @@ API_CONFIG = {
                 "query_params": {
                     "type": "object",
                     "description": "Query parameters for the API",
-                    "required": False,
                     "properties": {
                         "param": {
                             "type": "object",
@@ -227,6 +224,11 @@ API_CONFIG = {
                 },
             }
         },
+    },
+    "/api/v1/api-config/<int:pk>/": {
+        "methods": set(("GET",)),
+        "is_authenticated": True,
+        "GET_data": {},
     },
     "/api/v1/sync/": {
         "methods": set(("POST",)),
