@@ -9,6 +9,7 @@ logger = const.logger
 
 def _url_rule_to_authenticate(app):
 
+
     static_config = app.config.get("STATIC_CONFIG", {})
     api_config = app.config.get("API_CONFIG", {})
 
@@ -16,6 +17,8 @@ def _url_rule_to_authenticate(app):
     method = request.method
     url_rule = str(request.url_rule)
 
+    if method in {"OPTIONS"}:
+        return None, None
     split_url_rule = url_rule.split("/", maxsplit=2)
     static_path = None
     if split_url_rule and len(split_url_rule) >= 2:
