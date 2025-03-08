@@ -55,7 +55,7 @@ def create_api_config(entity):
         name=entity.name,
         route=f"{constants.API_PREFIX}{route}",
         method=entity.method,
-        description=f"{constants.API_CONF_DEFAULT_DESCRIPTION}\n{entity.description}",
+        description=f"{messages.API_CONF_DEFAULT_DESCRIPTION}\n{entity.description}",
         body=str(entity.body),
         is_authenticated=entity.is_authenticated,
         query_params=str(entity.query_params),
