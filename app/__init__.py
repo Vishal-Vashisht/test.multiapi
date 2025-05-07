@@ -13,6 +13,7 @@ from app.api.controllers.v1.api_config import apiconfig_bp
 from app.api.controllers.v1.documentation import docapi_view
 from app.api.controllers.v1.dynamic_api import dynamic_bp
 from app.api.controllers.v1.datatypes import datatype_bp
+from app.api.controllers.v1.cloudinary_controller import cloudnary_bp
 from app.api.models.models import db, migrate, insert_initial_data
 from app.api.controllers.v1.sync import sync_bp
 from app.scheduler import register_scheduler
@@ -23,6 +24,7 @@ from app.frontend.controllers import homebp, loginbp, docbp
 from app.custom_cache import intialized_cache
 from app.initial_tasks import task
 from app.error_handler import initialize_error_handler
+from app.utils.cloudnary.cloudnary_gateway import init_cloudnary_client
 
 
 def create_app():
@@ -34,6 +36,7 @@ def create_app():
     migrate.init_app(app, db)
     intialized_cache(app=app)
     initialize_error_handler(app=app)
+    init_cloudnary_client(app)
     # register_scheduler(app)
     register_middelware(app)
     register_cli_commands(app)
@@ -54,6 +57,7 @@ def create_app():
     app.register_blueprint(homebp)
     app.register_blueprint(loginbp)
     app.register_blueprint(docbp)
+    app.register_blueprint(cloudnary_bp)
 
     # tasks
     app.view_class = dynamic_bp.view_class

@@ -13,6 +13,12 @@ PASS = os.getenv("PASS")
 USERNAME = os.getenv("USERNAME")
 RESTART_TIME = os.getenv("restart_time")
 DEPLOYED_ENV = os.getenv("DEPLOYED_ENV")
+CLOUDNARY_NAME = os.getenv("CLOUDNARY_NAME")
+CLOUDNARY_API_KEY = os.getenv("CLOUDNARY_API_KEY")
+CLOUDNARY_API_SECRET = os.getenv("CLOUDNARY_API_SECRET")
+CLOUDINARY_URL = os.getenv("CLOUDINARY_URL")
+
+
 API_CONFIG = {
     "/api/v1/echo/": {
         "methods": set(("POST",)),
@@ -235,6 +241,12 @@ API_CONFIG = {
         "is_authenticated": True,
         "POST_data": {},
     },
+    "/api/v1/cloudnary/upload/": {
+        "methods": set(("POST",)),
+        "is_authenticated": False,
+        "POST_data": {},
+    },
+
     # Frontend
     "/home/": {"methods": set(("GET",)), "is_authenticated": True, "feroute": True},
     "/home/data/": {
