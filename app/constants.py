@@ -71,3 +71,5 @@ DECORATE_METHODS = set(("get", "post", "delete", "patch", "put", "head"))
 
 # VALIDATOR 
 API_PREFIX = "api/v1/"
+
+FILE_SERVICE_CLOUDNARY = "Cloudnary"

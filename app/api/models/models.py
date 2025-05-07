@@ -294,6 +294,13 @@ class APIConfig(db.Model):
 
     entity_rel = db.relationship("Entity", backref="api_config", lazy=True)
 
+
+class FileServices(db.Model):
+
+    __tablename__ = "file_services"
+    id = db.Column(db.Integer, primary_key=True, autoincrement=True)
+    servicename = db.Column(db.String, nullable=True)
+
     def save(self):
         db.session.add(self)
         try:
@@ -303,31 +310,58 @@ class APIConfig(db.Model):
             raise e
 
     def __str__(self):
-        return self.name
+        return self.servicename
 
     def __repr__(self):
         return super().__repr__()
 
     def serialize(self):
 
-        if isinstance(self.body, str):
+        return {
+            "pk": self.id,
+            "servicename": self.servicename,
+        }
+
+
+class FilesDetails(db.Model):
+
+    __tablename__ = "files_details"
+    id = db.Column(db.Integer, primary_key=True, autoincrement=True)
+    filename = db.Column(db.String, nullable=True)
+    file_id = db.Column(db.String, nullable=True)
+    extra_data = db.Column(db.String)
+    link = db.Column(db.String, nullable=True)
+    fileservice = db.Column(db.Integer, db.ForeignKey("file_services.id"), nullable=False)
+    created_date = db.Column(db.DateTime, server_default=db.func.now())
+
+    fileservice_rel = db.relationship("FileServices", backref="files_details", lazy=True)
+
+    def save(self):
+        db.session.add(self)
+        try:
+            db.session.commit()
+        except (Exception, exc.SQLAlchemyError) as e:
+            db.session.rollback()
+            raise e
+
+    def __str__(self):
+        return self.filename
+
+    def __repr__(self):
+        return super().__repr__()
+
+    def serialize(self):
+
+        if isinstance(self.extra_data, str):
             self.body = ast.literal_eval(self.body)
-        if isinstance(self.response, str):
-            self.response = ast.literal_eval(self.response)
-        if isinstance(self.query_params, str):
-            self.query_params = ast.literal_eval(self.query_params)
 
         return {
             "pk": self.id,
-            "name": self.name,
-            "route": self.route,
-            "method": self.method,
-            "description": self.description,
-            "body": self.body,
-            "query_params": self.query_params,
-            "response": self.response,
-            "is_authenticated": self.is_authenticated,
-            "entity": self.entity,
+            "filename": self.filename,
+            "file_id": self.file_id,
+            "extra_data": self.extra_data,
+            "link": self.link,
+            "fileservice": self.fileservice,
             "created_date": self.created_date,
         }
 
@@ -377,6 +411,15 @@ def insert_initial_data(app):
             task_data_raw = json.load(open("./app/data/datatype_data.json"))
             data = task_data_raw.get("data", {})
             db.session.bulk_insert_mappings(DB_Datatypes, data)
+            db.session.commit()
+
+        if FileServices.query.count() == 0:
+
+            logger.info("--- Inserting fileservices ---")
+            # Create initial status data
+            task_data_raw = json.load(open("./app/data/fileservices_data.json"))
+            data = task_data_raw.get("data", {})
+            db.session.bulk_insert_mappings(FileServices, data)
             db.session.commit()
 
 
