@@ -294,6 +294,13 @@ class APIConfig(db.Model):
 
     entity_rel = db.relationship("Entity", backref="api_config", lazy=True)
 
+    def save(self):
+        db.session.add(self)
+        try:
+            db.session.commit()
+        except (Exception, exc.SQLAlchemyError) as e:
+            db.session.rollback()
+            raise e
 
 class FileServices(db.Model):
 
