@@ -1,4 +1,4 @@
-from flask import Blueprint, request, Response
+from flask import Blueprint, request, jsonify
 from flask.views import MethodView
 from app.constants import logger
 from app.utils.helpers import _handle_export
@@ -17,19 +17,22 @@ class ConvertToType(MethodView):
 
         if "error" in data:
             error = data.get("error", {})
-            error_msg = error.pop("error_msg", "An error occurred")
-            error_code = error.pop("error_code", "500")
-            extra_fields = {k: v for k, v in error.items()}
-            request_resonse = {
+
+            error_msg = error.get("error_msg", "An error occurred")
+            error_code = error.get("error_code", "500")
+
+            extra_fields = {
+                k: v for k, v in error.items()
+                if k not in ["error_msg", "error_code"]
+            }
+
+            response_body = {
                 "error_msg": error_msg,
                 "error_code": error_code,
                 **extra_fields
             }
-            return Response(
-                response=request_resonse,
-                status=int(error_code),
-                mimetype="application/json",
-            )
+
+            return jsonify(response_body), int(error_code)
 
         if isinstance(data, dict):
             export = data.pop("export", None)
