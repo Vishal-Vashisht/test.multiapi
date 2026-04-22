@@ -19,7 +19,7 @@ class ConvertToType(MethodView):
             error = data.get("error", {})
             error_msg = error.pop("error_msg", "An error occurred")
             error_code = error.pop("error_code", "500")
-            extra_fields = {k: v for k, v in error.items() if k not in ["error_msg", "error_code"]}
+            extra_fields = {k: v for k, v in error.items()}
             request_resonse = {
                 "error_msg": error_msg,
                 "error_code": error_code,

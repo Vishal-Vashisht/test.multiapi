@@ -23,7 +23,10 @@ API_CONFIG = {
     "/api/v1/echo/": {
         "methods": set(("POST",)),
         "is_authenticated": False,
-        "POST_data": {"body": {"data": {"required": True, "type": "object"}}},
+        "POST_data": {"body": {
+            "data": {"required": True, "type": "object"},
+            "error": {"required": False, "type": "object"},
+        },
     },
     "/api/v1/trvlr/": {"methods": set(("GET",)), "is_authenticated": False},
     "/api/v1/auth/register/usercart/": {
